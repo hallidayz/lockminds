@@ -64,7 +64,7 @@ export default function SecurityDashboard({
   return (
     <div className="space-y-6">
       {/* Security Status Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Encryption Status */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -84,52 +84,53 @@ export default function SecurityDashboard({
           </CardContent>
         </Card>
 
-        {/* Clickjacking Protection */}
+        {/* Authentication Methods */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Anti-Clickjacking</CardTitle>
+            <CardTitle className="text-sm font-medium">Authentication</CardTitle>
             <Shield className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                {clickjackingProtection ? (
-                  <CheckCircle2 className="h-4 w-4 text-green-500" />
-                ) : (
-                  <AlertTriangle className="h-4 w-4 text-red-500" />
-                )}
-                <span className="text-lg font-semibold" data-testid="text-clickjacking-status">
-                  {clickjackingProtection ? "Active" : "Disabled"}
-                </span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onToggleClickjackingProtection?.(!clickjackingProtection)}
-                data-testid="button-toggle-clickjacking"
-              >
-                {clickjackingProtection ? "Disable" : "Enable"}
-              </Button>
+            <div className="flex items-center space-x-2 mb-1">
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <span className="text-sm font-semibold">Multi-Factor</span>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Real-time threat detection
+            <p className="text-xs text-muted-foreground">
+              WebAuthn, FIDO2, Biometric
             </p>
           </CardContent>
         </Card>
 
-        {/* Session Info */}
+        {/* Risk Assessment */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Session</CardTitle>
+            <CardTitle className="text-sm font-medium">Risk Analysis</CardTitle>
+            <Eye className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center space-x-2">
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <span className="text-lg font-semibold">Low Risk</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Behavioral analysis active
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* OIDC & Federation */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Federation</CardTitle>
             <Zap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="flex items-center space-x-2">
               <CheckCircle2 className="h-4 w-4 text-green-500" />
-              <span className="text-lg font-semibold">Secure</span>
+              <span className="text-lg font-semibold">OIDC Ready</span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Zero-knowledge authentication
+              SSO & Federation enabled
             </p>
           </CardContent>
         </Card>

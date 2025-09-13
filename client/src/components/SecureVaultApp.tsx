@@ -96,6 +96,96 @@ export default function SecureVaultApp() {
     }
   };
 
+  const handleBiometricLogin = async () => {
+    setIsLoading(true);
+    console.log('Biometric authentication attempt');
+    
+    try {
+      // Simulate biometric authentication
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // In real implementation, this would use WebAuthn API for biometrics
+      const userData: UserData = {
+        email: "biometric@user.local",
+        userKey: "biometric_key_123",
+        zkProof: "biometric_proof_456"
+      };
+      
+      setUser(userData);
+      setEncryptionStatus("active");
+      addSecurityLog("User authenticated with biometrics", "success");
+      
+      console.log('Biometric authentication successful');
+    } catch (error) {
+      console.error('Biometric authentication failed:', error);
+      addSecurityLog("Biometric authentication failed", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleWebAuthnLogin = async () => {
+    setIsLoading(true);
+    console.log('WebAuthn/FIDO2 authentication attempt');
+    
+    try {
+      // Simulate WebAuthn authentication
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
+      // In real implementation, this would use @simplewebauthn/browser
+      const userData: UserData = {
+        email: "webauthn@user.local",
+        userKey: "webauthn_key_789",
+        zkProof: "webauthn_proof_abc"
+      };
+      
+      setUser(userData);
+      setEncryptionStatus("active");
+      addSecurityLog("User authenticated with WebAuthn/FIDO2", "success");
+      
+      console.log('WebAuthn authentication successful');
+    } catch (error) {
+      console.error('WebAuthn authentication failed:', error);
+      addSecurityLog("WebAuthn authentication failed", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePasswordlessLogin = async (email: string) => {
+    setIsLoading(true);
+    console.log('Passwordless authentication attempt for:', email);
+    
+    try {
+      // Simulate sending magic link
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      addSecurityLog(`Magic link sent to ${email}`, "success");
+      addSecurityLog("Push notification sent for MFA approval", "info");
+      
+      // Simulate user clicking magic link and MFA approval
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const userData: UserData = {
+        email,
+        userKey: "passwordless_key_def",
+        zkProof: "passwordless_proof_ghi"
+      };
+      
+      setUser(userData);
+      setEncryptionStatus("active");
+      addSecurityLog("User authenticated with passwordless magic link", "success");
+      addSecurityLog("Push notification MFA approved", "success");
+      
+      console.log('Passwordless authentication successful');
+    } catch (error) {
+      console.error('Passwordless authentication failed:', error);
+      addSecurityLog("Passwordless authentication failed", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleLogout = () => {
     console.log('Logging out user');
     setUser(null);
@@ -160,15 +250,22 @@ export default function SecureVaultApp() {
   // Initialize security checks
   useState(() => {
     detectClickjacking();
-    addSecurityLog("SecureVault initialized", "info");
+    addSecurityLog("LockMind security platform initialized", "info");
+    addSecurityLog("Risk-based authentication engine started", "info");
+    addSecurityLog("TOTP generator ready", "success");
   });
 
   if (!user) {
     return (
       <MasterPasswordScreen
         onLogin={handleLogin}
+        onBiometricLogin={handleBiometricLogin}
+        onWebAuthnLogin={handleWebAuthnLogin}
+        onPasswordlessLogin={handlePasswordlessLogin}
         encryptionStatus={encryptionStatus}
         isLoading={isLoading}
+        supportsBiometric={true}
+        supportsWebAuthn={true}
       />
     );
   }

@@ -72,10 +72,18 @@ export class MemStorage implements IStorage {
   async createVaultEntry(entry: InsertVaultEntry & { userId: string }): Promise<VaultEntry> {
     const id = randomUUID();
     const vaultEntry: VaultEntry = { 
-      ...entry, 
+      ...entry,
       id, 
       createdAt: new Date(), 
-      updatedAt: new Date() 
+      updatedAt: new Date(),
+      // Ensure null instead of undefined for optional fields
+      url: entry.url ?? null,
+      username: entry.username ?? null,
+      password: entry.password ?? null,
+      twoFA: entry.twoFA ?? null,
+      cardNumber: entry.cardNumber ?? null,
+      expiryDate: entry.expiryDate ?? null,
+      cvv: entry.cvv ?? null
     };
     this.vaultEntries.set(id, vaultEntry);
     return vaultEntry;
