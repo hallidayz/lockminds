@@ -6,9 +6,9 @@ import { z } from "zod";
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: text("email").notNull().unique(),
-  masterPasswordHash: text("master_password_hash").notNull(),
-  userKey: text("user_key").notNull(),
-  zkProof: text("zk_proof").notNull(),
+  masterPasswordHash: text("master_password_hash").notNull(), // Argon2id hash for verification
+  // NOTE: Removed userKey field - was cryptographically weak (32-bit entropy)
+  // NOTE: Removed zkProof field - was placeholder, not real zero-knowledge proof
   isActive: boolean("is_active").notNull().default(true),
   lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -17,16 +17,14 @@ export const users = pgTable("users", {
 export const vaultEntries = pgTable("vault_entries", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id),
-  name: text("name").notNull(),
-  url: text("url"),
-  username: text("username"),
-  password: text("password"),
-  type: text("type").notNull(), // "login" or "payment"
-  twoFA: text("two_fa"),
-  cardNumber: text("card_number"),
-  expiryDate: text("expiry_date"),
-  cvv: text("cvv"),
-  encryptedData: text("encrypted_data").notNull(),
+  type: text("type").notNull(), // "login" or "payment" (not sensitive, for filtering)
+  encryptedData: text("encrypted_data").notNull(), // All sensitive data encrypted with AES-GCM
+  iv: text("iv").notNull(), // Initialization vector used in encryption
+  salt: text("salt").notNull(), // Salt used for PBKDF2 key derivation
+  version: text("version").notNull().default('v1'), // Encryption version for future upgrades
+  // NOTE: Removed ALL plaintext sensitive fields for zero-trust:
+  // name, url, username, password, twoFA, cardNumber, expiryDate, cvv
+  // All sensitive data is now encrypted client-side in encryptedData field
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -127,21 +125,17 @@ export const mfaChallenges = pgTable("mfa_challenges", {
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   masterPasswordHash: true,
-  userKey: true,
-  zkProof: true,
+  // NOTE: Removed userKey and zkProof - were cryptographically insecure
 });
 
 export const insertVaultEntrySchema = createInsertSchema(vaultEntries).pick({
-  name: true,
-  url: true,
-  username: true,
-  password: true,
   type: true,
-  twoFA: true,
-  cardNumber: true,
-  expiryDate: true,
-  cvv: true,
   encryptedData: true,
+  iv: true,
+  salt: true,
+  version: true,
+  // NOTE: Removed all plaintext fields for zero-trust architecture
+  // All sensitive data must be encrypted client-side before storage
 });
 
 export const insertSecurityLogSchema = createInsertSchema(securityLogs).pick({

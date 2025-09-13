@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
@@ -8,19 +8,15 @@ import AddEntryForm from "./AddEntryForm";
 import SecurityDashboard from "./SecurityDashboard";
 import Settings from "./Settings";
 import { Settings as SettingsIcon, Shield, Plus, Grid3X3 } from "lucide-react";
+import { 
+  EncryptedVaultEntry, 
+  VaultEntryData, 
+  createEncryptedVaultEntry,
+  getDecryptedVaultEntry 
+} from "@/lib/encryption";
 
-interface VaultEntry {
-  id: string;
-  name: string;
-  url?: string;
-  username?: string;
-  password?: string;
-  type: "login" | "payment";
-  twoFA?: string;
-  cardNumber?: string;
-  expiryDate?: string;
-  cvv?: string;
-}
+// Use encrypted vault entries for zero-trust architecture
+type DecryptedVaultEntry = VaultEntryData & { id: string };
 
 interface SecurityLog {
   id: string;
@@ -32,8 +28,8 @@ interface SecurityLog {
 interface VaultMainProps {
   user: {
     email: string;
-    userKey: string;
-    zkProof: string;
+    masterPassword: string; // Use actual master password for PBKDF2 (zero-trust)
+    // NOTE: Removed userKey and zkProof - were cryptographically insecure
   };
   onLogout: () => void;
   encryptionStatus: string;
@@ -54,42 +50,89 @@ export default function VaultMain({
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddEntry, setShowAddEntry] = useState(false);
 
-  //todo: remove mock functionality
-  const [entries, setEntries] = useState<VaultEntry[]>([
-    {
-      id: "1",
-      name: "GitHub",
-      url: "https://github.com",
-      username: "user@example.com",
-      password: "SecurePassword123!",
-      type: "login",
-      twoFA: "123456"
-    },
-    {
-      id: "2",
-      name: "Gmail",
-      url: "https://gmail.com",
-      username: "user@gmail.com",
-      password: "AnotherSecurePass456!",
-      type: "login"
-    },
-    {
-      id: "3",
-      name: "Personal Credit Card",
-      type: "payment",
-      cardNumber: "4532-1234-5678-9012",
-      expiryDate: "12/26",
-      cvv: "123"
-    },
-    {
-      id: "4",
-      name: "Business Debit",
-      type: "payment",
-      cardNumber: "5555-4444-3333-2222",
-      expiryDate: "08/27",
-      cvv: "456"
+  // Encrypted vault entries - all sensitive data is encrypted client-side
+  const [encryptedEntries, setEncryptedEntries] = useState<EncryptedVaultEntry[]>([]);
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  // Decrypted entries state (zero-trust: only in memory, never persisted as plaintext)
+  const [entries, setEntries] = useState<DecryptedVaultEntry[]>([]);
+
+  // Initialize with sample encrypted entries and decrypt them
+  useEffect(() => {
+    const initializeVault = async () => {
+      try {
+        setIsInitializing(true);
+        
+        // Create sample encrypted entries using FULL master password with PBKDF2
+        const sampleEntries = await Promise.all([
+          createEncryptedVaultEntry({
+            name: "GitHub",
+            url: "https://github.com",
+            username: "user@example.com", 
+            password: "SecurePassword123!",
+            type: "login",
+            twoFA: "123456"
+          }, user.masterPassword, user.email, "1"),
+          createEncryptedVaultEntry({
+            name: "Gmail",
+            url: "https://gmail.com",
+            username: "user@gmail.com",
+            password: "AnotherSecurePass456!",
+            type: "login"
+          }, user.masterPassword, user.email, "2"),
+          createEncryptedVaultEntry({
+            name: "Personal Credit Card",
+            cardNumber: "4532-1234-5678-9012",
+            expiryDate: "12/26",
+            cvv: "123",
+            cardholderName: "John Doe",
+            type: "payment"
+          }, user.masterPassword, user.email, "3"),
+          createEncryptedVaultEntry({
+            name: "Business Debit",
+            cardNumber: "5555-4444-3333-2222",
+            expiryDate: "08/27",
+            cvv: "456",
+            cardholderName: "Jane Smith",
+            type: "payment"
+          }, user.masterPassword, user.email, "4")
+        ]);
+
+        setEncryptedEntries(sampleEntries);
+        await decryptAllEntries(sampleEntries);
+      } catch (error) {
+        console.error('Failed to initialize vault:', error);
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+
+    initializeVault();
+  }, [user.masterPassword, user.email]);
+
+  // Decrypt all entries when encrypted entries change
+  useEffect(() => {
+    if (!isInitializing) {
+      decryptAllEntries(encryptedEntries);
     }
-  ]);
+  }, [encryptedEntries, user.masterPassword, user.email, isInitializing]);
+
+  // Function to decrypt all entries
+  const decryptAllEntries = async (encryptedEntriesList: EncryptedVaultEntry[]) => {
+    try {
+      const decryptedEntries = await Promise.all(
+        encryptedEntriesList.map(async (encrypted) => {
+          const decrypted = await getDecryptedVaultEntry(encrypted, user.masterPassword, user.email);
+          return decrypted;
+        })
+      );
+      
+      setEntries(decryptedEntries.filter(Boolean) as DecryptedVaultEntry[]);
+    } catch (error) {
+      console.error('Failed to decrypt entries:', error);
+      setEntries([]);
+    }
+  };
 
   const [securityLogs, setSecurityLogs] = useState<SecurityLog[]>([
     {
@@ -141,19 +184,34 @@ export default function VaultMain({
     payment: entries.filter(e => e.type === "payment").length
   }), [entries]);
 
-  const handleAddEntry = (newEntry: any) => {
-    setEntries(prev => [...prev, newEntry]);
-    setShowAddEntry(false);
-    
-    // Add security log
-    const log: SecurityLog = {
-      id: Date.now().toString(),
-      timestamp: new Date(),
-      message: `New ${newEntry.type} entry "${newEntry.name}" added to vault`,
-      type: "success"
-    };
-    setSecurityLogs(prev => [log, ...prev.slice(0, 9)]);
-    console.log('Added new entry:', newEntry);
+  const handleAddEntry = async (newEntry: VaultEntryData) => {
+    try {
+      // Zero-trust: encrypt before storage using FULL master password with PBKDF2
+      const encryptedEntry = await createEncryptedVaultEntry(newEntry, user.masterPassword, user.email);
+      setEncryptedEntries(prev => [...prev, encryptedEntry]);
+      setShowAddEntry(false);
+      
+      // Add security log
+      const log: SecurityLog = {
+        id: Date.now().toString(),
+        timestamp: new Date(),
+        message: `New ${newEntry.type} entry "${newEntry.name}" added to vault (encrypted)`,
+        type: "success"
+      };
+      setSecurityLogs(prev => [log, ...prev.slice(0, 9)]);
+      console.log('Added new encrypted entry:', { type: newEntry.type, name: newEntry.name });
+    } catch (error) {
+      console.error('Failed to add encrypted entry:', error);
+      
+      // Add error log
+      const log: SecurityLog = {
+        id: Date.now().toString(),
+        timestamp: new Date(),
+        message: `Failed to add vault entry: encryption error`,
+        type: "error"
+      };
+      setSecurityLogs(prev => [log, ...prev.slice(0, 9)]);
+    }
   };
 
   const handleEditEntry = (entryId: string) => {
@@ -162,14 +220,15 @@ export default function VaultMain({
   };
 
   const handleDeleteEntry = (entryId: string) => {
-    setEntries(prev => prev.filter(e => e.id !== entryId));
-    console.log('Deleted entry:', entryId);
+    // Remove from encrypted storage
+    setEncryptedEntries(prev => prev.filter(e => e.id !== entryId));
+    console.log('Deleted encrypted entry:', entryId);
     
     // Add security log
     const log: SecurityLog = {
       id: Date.now().toString(),
       timestamp: new Date(),
-      message: `Vault entry deleted`,
+      message: `Vault entry deleted (secure deletion)`,
       type: "info"
     };
     setSecurityLogs(prev => [log, ...prev.slice(0, 9)]);

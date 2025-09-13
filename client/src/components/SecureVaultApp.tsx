@@ -81,7 +81,7 @@ export default function SecureVaultApp() {
     };
     
     initializeApp();
-    addSecurityLog("LockMind security platform initialized", "info");
+    addSecurityLog("LockMiNDS security platform initialized", "info");
     addSecurityLog("Risk-based authentication engine started", "info");
     addSecurityLog("TOTP generator ready", "success");
   }, []);
@@ -511,7 +511,7 @@ export default function SecureVaultApp() {
   // Initialize security checks
   useState(() => {
     detectClickjacking();
-    addSecurityLog("LockMind security platform initialized", "info");
+    addSecurityLog("LockMiNDS security platform initialized", "info");
     addSecurityLog("Risk-based authentication engine started", "info");
     addSecurityLog("TOTP generator ready", "success");
   });

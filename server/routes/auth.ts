@@ -53,17 +53,13 @@ router.post('/register', async (req: Request, res: Response) => {
     const saltRounds = 12;
     const masterPasswordHash = await bcrypt.hash(password, saltRounds);
 
-    // For zero-trust model: user key and zk proof are generated client-side
-    // For now, we store placeholder values that will be updated by client
-    const userKey = 'PLACEHOLDER_WILL_BE_SET_BY_CLIENT';
-    const zkProof = 'PLACEHOLDER_WILL_BE_SET_BY_CLIENT';
+    // Zero-trust model: No userKey or zkProof stored - use master password directly with PBKDF2
+    // All encryption happens client-side with the actual master password
 
-    // Create user
+    // Create user (removed insecure userKey and zkProof fields)
     const user = await storage.createUser({
       email,
-      masterPasswordHash,
-      userKey,
-      zkProof
+      masterPasswordHash
     });
 
     // Log security event

@@ -16,9 +16,10 @@ import {
   Check,
   X
 } from "lucide-react";
+import { VaultEntryData } from "@/lib/encryption";
 
 interface AddEntryFormProps {
-  onSave: (entry: any) => void;
+  onSave: (entry: VaultEntryData) => void;
   onCancel: () => void;
 }
 
@@ -66,20 +67,18 @@ export default function AddEntryForm({ onSave, onCancel }: AddEntryFormProps) {
 
   const handleSave = () => {
     if (activeTab === "login") {
-      const entry = {
+      const entry: VaultEntryData = {
         ...loginData,
-        type: "login",
-        id: Date.now().toString() // Temporary ID for demo
+        type: "login"
       };
-      console.log('Saving login entry:', entry);
+      console.log('Saving encrypted login entry');
       onSave(entry);
     } else {
-      const entry = {
+      const entry: VaultEntryData = {
         ...paymentData,
-        type: "payment",
-        id: Date.now().toString() // Temporary ID for demo
+        type: "payment"
       };
-      console.log('Saving payment entry:', entry);
+      console.log('Saving encrypted payment entry');
       onSave(entry);
     }
   };
