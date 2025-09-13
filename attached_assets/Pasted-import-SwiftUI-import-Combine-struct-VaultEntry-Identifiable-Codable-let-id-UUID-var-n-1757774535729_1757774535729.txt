@@ -1,0 +1,141 @@
+import SwiftUI
+import Combine
+
+struct VaultEntry: Identifiable, Codable {
+    let id: UUID
+    var name: String
+    var url: String?
+    var username: String?
+    var password: String?
+    var type: String // "login" or "payment"
+    var twoFA: String?
+    // Payment fields
+    var cardNumber: String?
+    var expiryDate: String?
+    var cvv: String?
+    var encryptedData: String?
+}
+
+struct SecurityLog: Identifiable {
+    var id = UUID()
+    var timestamp: Date
+    var message: String
+}
+
+class SecureVaultViewModel: ObservableObject {
+    @Published var user: UserData?
+    @Published var email: String = ""
+    @Published var masterPassword: String = ""
+    @Published var showMasterPassword: Bool = false
+    @Published var entries: [VaultEntry] = []
+    @Published var showNewEntry: Bool = false
+    @Published var selectedEntry: VaultEntry?
+    @Published var securityLog: [SecurityLog] = []
+    @Published var encryptionStatus: String = "initializing"
+    @Published var clickjackingProtection: Bool = true
+
+    struct UserData {
+        var email: String
+        var userKey: String
+        var zkProof: String
+    }
+
+    // Quantum-resistant encryption (placeholder, replace with real algorithm)
+    func quantumResistantEncrypt(_ entry: VaultEntry, userKey: String) -> String {
+        let timestamp = Date().timeIntervalSince1970
+        let entropy = UUID().uuidString
+        let data = "\(entry)\(timestamp)\(entropy)\(userKey)"
+        return "\(data).QUANTUM_ENCRYPTED".base64Encoded()
+    }
+
+    func quantumResistantDecrypt(_ encryptedData: String, userKey: String) -> VaultEntry? {
+        guard let decoded = encryptedData.base64Decoded(),
+              decoded.contains(".QUANTUM_ENCRYPTED"),
+              decoded.contains(userKey)
+        else { return nil }
+        // Deserialize (mock)
+        return selectedEntry // Simulated for demo
+    }
+
+    func generateZKProof(password: String, salt: String) -> String {
+        let combined = "\(password)\(salt)\(Date().timeIntervalSince1970)"
+        let data = combined.data(using: .utf8)!
+        return data.base64EncodedString().prefix(32).description
+    }
+
+    func deriveUserKey(password: String, email: String) -> String {
+        let combined = "\(password)\(email)SALT_2024_SECURE"
+        var hash = 0
+        for char in combined.utf8 {
+            hash = ((hash << 5) - hash) + Int(char)
+            hash = hash & hash // Keep 32-bit
+        }
+        return String(abs(hash), radix: 16)
+    }
+
+    func detectClickjacking() {
+        // Not directly needed for macOS app, but could check window focus, overlays etc.
+        // Add anti-overlay/window hijack logic here if relevant
+    }
+
+    func addSecurityLog(_ message: String) {
+        let log = SecurityLog(timestamp: Date(), message: message)
+        securityLog.append(log)
+        if securityLog.count > 10 {
+            securityLog = Array(securityLog.suffix(10))
+        }
+    }
+
+    func handleLogin(email: String, password: String) {
+        let userKey = deriveUserKey(password: password, email: email)
+        let zkProof = generateZKProof(password: password, salt: email)
+        user = UserData(email: email, userKey: userKey, zkProof: zkProof)
+        encryptionStatus = "active"
+        addSecurityLog("User authenticated with zero-knowledge proof")
+        // Load and encrypt sample/demo entries
+        let entriesDemo: [VaultEntry] = [
+            VaultEntry(id: UUID(), name: "GitHub", url: "https://github.com", username: "user@email.com", password: "SecurePass123!", type: "login", twoFA: "123456"),
+            VaultEntry(id: UUID(), name: "Credit Card", url: nil, username: nil, password: nil, type: "payment", twoFA: nil, cardNumber: "4532-1234-5678-9012", expiryDate: "12/26", cvv: "123")
+        ]
+        entries = entriesDemo.map { entry in
+            var encrypted = entry
+            encrypted.encryptedData = quantumResistantEncrypt(entry, userKey: userKey)
+            return encrypted
+        }
+    }
+
+    func decryptEntry(_ entry: VaultEntry) -> VaultEntry? {
+        guard let user = user else { return nil }
+        guard let encryptedData = entry.encryptedData else { return nil }
+        return quantumResistantDecrypt(encryptedData, userKey: user.userKey)
+    }
+
+    func secureAutofill(_ entry: VaultEntry) {
+        if !clickjackingProtection {
+            addSecurityLog("BLOCKED: Autofill prevented due to security concerns")
+            return
+        }
+        guard let decrypted = decryptEntry(entry) else { return }
+        addSecurityLog("Secure autofill initiated for \(decrypted.name)")
+        // MacOS clipboard logic
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(decrypted.password ?? decrypted.cardNumber ?? "", forType: .string)
+        // Clear after 30 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
+            pasteboard.clearContents()
+            self.addSecurityLog("Clipboard cleared")
+        }
+    }
+}
+
+// Helpers for base64
+extension String {
+    func base64Encoded() -> String {
+        Data(self.utf8).base64EncodedString()
+    }
+    func base64Decoded() -> String? {
+        guard let data = Data(base64Encoded: self) else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+}
