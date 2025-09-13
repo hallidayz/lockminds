@@ -3,11 +3,35 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { authenticateToken, AuthenticatedRequest, requireLowRisk, requireStrongAuth } from "./middleware/auth";
 import authRoutes from './routes/auth';
+import oidcRoutes from './routes/oidc';
+import pushRoutes from './routes/push';
 import { insertVaultEntrySchema, insertSecurityLogSchema } from "@shared/schema";
+import { OIDCService } from "./services/oidc";
+import { Request, Response } from "express";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize OIDC service
+  await OIDCService.initialize();
+
   // Authentication routes
   app.use('/api/auth', authRoutes);
+  
+  // OIDC routes
+  app.use('/api/oidc', oidcRoutes);
+  
+  // OIDC Discovery document (must be at root /.well-known path)
+  app.get('/.well-known/openid_configuration', (req: Request, res: Response) => {
+    try {
+      const discoveryDocument = OIDCService.getDiscoveryDocument();
+      res.json(discoveryDocument);
+    } catch (error) {
+      console.error('OIDC discovery error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Push notification routes
+  app.use('/api/push', pushRoutes);
 
   // Vault entries (requires authentication and low risk)
   app.get('/api/vault', authenticateToken, requireLowRisk(30), async (req: AuthenticatedRequest, res) => {
@@ -102,7 +126,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       services: {
         database: 'connected',
         authentication: 'ready',
-        webauthn: 'ready'
+        webauthn: 'ready',
+        oidc: 'ready',
+        pushNotifications: 'ready'
       }
     });
   });
