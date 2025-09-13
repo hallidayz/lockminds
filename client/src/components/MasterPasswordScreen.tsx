@@ -53,9 +53,9 @@ export default function MasterPasswordScreen({
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center space-x-3">
-            <img src={lockMindLogo} alt="LockMind" className="h-12 w-12" />
+            <img src={lockMindLogo} alt="LockMiNDS" className="h-12 w-12" />
             <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-blue-600 bg-clip-text text-transparent">
-              LockMind
+              LockMiNDS
             </h1>
           </div>
           <p className="text-muted-foreground text-sm">

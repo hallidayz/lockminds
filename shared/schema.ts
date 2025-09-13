@@ -9,6 +9,8 @@ export const users = pgTable("users", {
   masterPasswordHash: text("master_password_hash").notNull(),
   userKey: text("user_key").notNull(),
   zkProof: text("zk_proof").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

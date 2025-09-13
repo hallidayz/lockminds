@@ -6,7 +6,8 @@ import VaultSidebar from "./VaultSidebar";
 import VaultEntry from "./VaultEntry";
 import AddEntryForm from "./AddEntryForm";
 import SecurityDashboard from "./SecurityDashboard";
-import { Settings, Shield, Plus, Grid3X3 } from "lucide-react";
+import Settings from "./Settings";
+import { Settings as SettingsIcon, Shield, Plus, Grid3X3 } from "lucide-react";
 
 interface VaultEntry {
   id: string;
@@ -299,15 +300,7 @@ export default function VaultMain({
 
             {/* Settings */}
             {activeView === "settings" && (
-              <div className="space-y-6">
-                <div className="text-center py-12">
-                  <Settings className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Settings Panel</h3>
-                  <p className="text-muted-foreground">
-                    Configuration options coming soon
-                  </p>
-                </div>
-              </div>
+              <Settings user={user} />
             )}
           </main>
         </div>

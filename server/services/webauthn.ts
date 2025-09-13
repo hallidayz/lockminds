@@ -8,7 +8,7 @@ import { randomBytes } from 'crypto';
 import { storage } from '../storage';
 
 // Replace with your actual domain in production
-const RP_NAME = 'LockMind Security Platform';
+const RP_NAME = 'LockMiNDS Security Platform';
 const RP_ID = 'localhost';
 const ORIGIN = 'http://localhost:5000';
 

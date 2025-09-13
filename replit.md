@@ -1,8 +1,8 @@
-# LockMind Security Platform
+# LockMiNDS Security Platform
 
 ## Overview
 
-LockMind is a comprehensive cross-platform password manager and security platform built with advanced authentication technologies. The application features quantum-resistant encryption, WebAuthn/FIDO2 biometric authentication, zero-knowledge architecture, and comprehensive anti-clickjacking protection. It provides secure vault management for passwords and payment cards, with real-time threat detection and risk-based authentication.
+LockMiNDS is a comprehensive cross-platform password manager and security platform built with advanced authentication technologies. The application features quantum-resistant encryption, WebAuthn/FIDO2 biometric authentication, zero-knowledge architecture, and comprehensive anti-clickjacking protection. It provides secure vault management for passwords and payment cards, with real-time threat detection and risk-based authentication.
 
 ## User Preferences
 
