@@ -181,8 +181,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 For support, feature requests, or bug reports:
 - Open an issue on GitHub
-- Contact: support@lockminds.com
-- Documentation: https://docs.lockminds.com
+- Contact: support@acminds.com
+- Documentation: https://docs.acminds.com
 
 ## 🔒 Security Disclosure
 
