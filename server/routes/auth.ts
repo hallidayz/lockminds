@@ -14,7 +14,31 @@ const router = Router();
 // User registration
 router.post('/register', async (req: Request, res: Response) => {
   try {
-    const { email, masterPasswordHash, userKey, zkProof } = insertUserSchema.parse(req.body);
+    // Frontend sends email and password; we hash the password server-side
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({
+        error: 'Email and password are required',
+        code: 'MISSING_FIELDS'
+      });
+    }
+
+    // Validate email format
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      return res.status(400).json({
+        error: 'Invalid email format',
+        code: 'INVALID_EMAIL'
+      });
+    }
+
+    // Validate password strength
+    if (password.length < 8) {
+      return res.status(400).json({
+        error: 'Password must be at least 8 characters long',
+        code: 'WEAK_PASSWORD'
+      });
+    }
     
     // Check if user already exists
     const existingUser = await storage.getUserByEmail(email);
@@ -24,6 +48,15 @@ router.post('/register', async (req: Request, res: Response) => {
         code: 'USER_EXISTS' 
       });
     }
+
+    // Hash password server-side
+    const saltRounds = 12;
+    const masterPasswordHash = await bcrypt.hash(password, saltRounds);
+
+    // For zero-trust model: user key and zk proof are generated client-side
+    // For now, we store placeholder values that will be updated by client
+    const userKey = 'PLACEHOLDER_WILL_BE_SET_BY_CLIENT';
+    const zkProof = 'PLACEHOLDER_WILL_BE_SET_BY_CLIENT';
 
     // Create user
     const user = await storage.createUser({
@@ -44,6 +77,7 @@ router.post('/register', async (req: Request, res: Response) => {
       user: {
         id: user.id,
         email: user.email,
+        isActive: true,
         createdAt: user.createdAt
       }
     });
@@ -59,7 +93,14 @@ router.post('/register', async (req: Request, res: Response) => {
 // Password-based login
 router.post('/login', async (req: Request, res: Response) => {
   try {
-    const { email, masterPasswordHash, deviceInfo } = req.body;
+    const { email, password, deviceInfo } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        error: 'Email and password are required',
+        code: 'MISSING_FIELDS'
+      });
+    }
 
     const user = await storage.getUserByEmail(email);
     if (!user) {
@@ -70,7 +111,7 @@ router.post('/login', async (req: Request, res: Response) => {
     }
 
     // Verify password hash
-    const isValidPassword = await bcrypt.compare(masterPasswordHash, user.masterPasswordHash);
+    const isValidPassword = await bcrypt.compare(password, user.masterPasswordHash);
     if (!isValidPassword) {
       await storage.createSecurityLog({
         userId: user.id,
@@ -156,6 +197,7 @@ router.post('/login', async (req: Request, res: Response) => {
       success: true,
       accessToken: tokenData.accessToken,
       refreshToken: tokenData.refreshToken,
+      sessionId: sessionId, // Fix: Include sessionId in response
       expiresAt: tokenData.expiresAt,
       user: {
         id: user.id,
@@ -327,6 +369,7 @@ router.post('/webauthn/authenticate/complete', async (req: Request, res: Respons
         success: true,
         accessToken: tokenData.accessToken,
         refreshToken: tokenData.refreshToken,
+        sessionId: sessionId, // Fix: Include sessionId in response
         expiresAt: tokenData.expiresAt,
         user: {
           id: user.id,
@@ -521,6 +564,35 @@ router.get('/devices', authenticateToken, async (req: AuthenticatedRequest, res:
     res.status(500).json({ 
       error: 'Failed to retrieve devices',
       code: 'GET_DEVICES_FAILED' 
+    });
+  }
+});
+
+// Get current user
+router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const userId = req.user!.userId;
+    const user = await storage.getUserById(userId);
+    
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not found',
+        code: 'USER_NOT_FOUND'
+      });
+    }
+
+    // Return user data without sensitive fields
+    res.json({
+      id: user.id,
+      email: user.email,
+      isActive: user.isActive,
+      createdAt: user.createdAt
+    });
+  } catch (error) {
+    console.error('Get current user error:', error);
+    res.status(500).json({
+      error: 'Failed to get user information',
+      code: 'GET_USER_FAILED'
     });
   }
 });

@@ -1,11 +1,16 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import MasterPasswordScreen from "./MasterPasswordScreen";
 import VaultMain from "./VaultMain";
+import { AuthService, AuthResult, User, AuthError, WebAuthnError } from "@/lib/auth";
+import { useToast } from "@/hooks/use-toast";
 
 interface UserData {
   email: string;
   userKey: string;
   zkProof: string;
+  userId: string;
+  accessToken: string;
+  sessionId: string;
 }
 
 interface SecurityLog {
@@ -20,6 +25,66 @@ export default function SecureVaultApp() {
   const [encryptionStatus, setEncryptionStatus] = useState<string>("initializing");
   const [clickjackingProtection, setClickjackingProtection] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [supportsBiometric, setSupportsBiometric] = useState(false);
+  const [supportsWebAuthn, setSupportsWebAuthn] = useState(false);
+  const { toast } = useToast();
+
+  // Check authentication capabilities and restore session on mount
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        // Check authentication capabilities
+        setSupportsWebAuthn(AuthService.isWebAuthnSupported());
+        setSupportsBiometric(await AuthService.isPlatformAuthenticatorAvailable());
+        setEncryptionStatus("active");
+        
+        // Try to restore existing session
+        if (AuthService.isAuthenticated()) {
+          try {
+            addSecurityLog("Restoring previous session", "info");
+            
+            // Get current user to validate session
+            const currentUser = await AuthService.getCurrentUser();
+            const storedUserId = localStorage.getItem('userId');
+            const storedEmail = localStorage.getItem('lastEmail');
+            
+            if (currentUser && storedUserId) {
+              // Restore user data from localStorage and session
+              const userKey = localStorage.getItem('userKey') || `restored_${storedUserId}`;
+              const zkProof = localStorage.getItem('zkProof') || `restored_proof_${Date.now()}`;
+              
+              const userData: UserData = {
+                email: currentUser.email,
+                userKey,
+                zkProof,
+                userId: currentUser.id,
+                accessToken: AuthService.getAccessToken() || '',
+                sessionId: localStorage.getItem('sessionId') || ''
+              };
+              
+              setUser(userData);
+              addSecurityLog("Session restored successfully", "success");
+              addSecurityLog("User authenticated from stored session", "success");
+            }
+          } catch (error) {
+            console.error('Session restoration failed:', error);
+            addSecurityLog("Session restoration failed - user will need to login", "warning");
+            
+            // Clear invalid session
+            AuthService.clearAuth();
+          }
+        }
+      } catch (error) {
+        console.error('App initialization error:', error);
+        addSecurityLog("App initialization error", "error");
+      }
+    };
+    
+    initializeApp();
+    addSecurityLog("LockMind security platform initialized", "info");
+    addSecurityLog("Risk-based authentication engine started", "info");
+    addSecurityLog("TOTP generator ready", "success");
+  }, []);
 
   // Quantum-resistant encryption placeholder functions
   const quantumResistantEncrypt = useCallback((data: any, userKey: string): string => {
@@ -67,30 +132,61 @@ export default function SecureVaultApp() {
 
   const handleLogin = async (email: string, masterPassword: string) => {
     setIsLoading(true);
-    console.log('Authentication attempt for:', email);
+    addSecurityLog(`Authentication attempt for: ${email}`, "info");
     
     try {
-      // Simulate authentication delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Store email for future use
+      localStorage.setItem('lastEmail', email);
       
+      // Authenticate with real backend
+      const authResult: AuthResult = await AuthService.login({
+        email,
+        password: masterPassword
+      });
+      
+      // Derive local encryption key (zero-trust: backend never sees this)
       const userKey = deriveUserKey(masterPassword, email);
       const zkProof = generateZKProof(masterPassword, email);
       
       const userData: UserData = {
-        email,
+        email: authResult.user.email,
         userKey,
-        zkProof
+        zkProof,
+        userId: authResult.user.id,
+        accessToken: authResult.accessToken,
+        sessionId: authResult.sessionId
       };
       
       setUser(userData);
       setEncryptionStatus("active");
-      addSecurityLog("User authenticated with zero-knowledge proof", "success");
+      
+      // Store encryption keys for session restoration (in real app, use secure storage)
+      localStorage.setItem('userKey', userKey);
+      localStorage.setItem('zkProof', zkProof);
+      
+      addSecurityLog("User authenticated with backend", "success");
+      addSecurityLog("Local encryption key derived", "info");
       addSecurityLog("Quantum-resistant encryption initialized", "info");
+      
+      if (authResult.requiresMFA) {
+        addSecurityLog("MFA required - additional verification needed", "warning");
+      }
+      
+      toast({
+        title: "Login Successful",
+        description: `Welcome back, ${email}`,
+      });
       
       console.log('Authentication successful');
     } catch (error) {
       console.error('Authentication failed:', error);
       addSecurityLog("Authentication failed", "error");
+      
+      toast({
+        title: "Login Failed",
+        description: error instanceof Error ? error.message : "Authentication failed",
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }
@@ -98,27 +194,63 @@ export default function SecureVaultApp() {
 
   const handleBiometricLogin = async () => {
     setIsLoading(true);
-    console.log('Biometric authentication attempt');
+    addSecurityLog('Biometric authentication attempt', "info");
     
     try {
-      // Simulate biometric authentication
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // For biometric login, we need to prompt for email first
+      const email = localStorage.getItem('lastEmail') || prompt('Enter your email for biometric authentication:') || 'user@example.com';
       
-      // In real implementation, this would use WebAuthn API for biometrics
+      // Authenticate using WebAuthn platform authenticator (biometric)
+      const authResult: AuthResult = await AuthService.authenticateWithBiometric(email);
+      
+      // Generate local encryption key using biometric authentication
+      // Note: We don't have the password, so we use a different derivation method
+      const biometricSeed = `biometric_${authResult.user.id}_${Date.now()}`;
+      const userKey = deriveUserKey(biometricSeed, email);
+      const zkProof = generateZKProof(biometricSeed, email);
+      
       const userData: UserData = {
-        email: "biometric@user.local",
-        userKey: "biometric_key_123",
-        zkProof: "biometric_proof_456"
+        email: authResult.user.email,
+        userKey,
+        zkProof,
+        userId: authResult.user.id,
+        accessToken: authResult.accessToken,
+        sessionId: authResult.sessionId
       };
       
       setUser(userData);
       setEncryptionStatus("active");
+      
+      // Store encryption keys for session restoration
+      localStorage.setItem('userKey', userKey);
+      localStorage.setItem('zkProof', zkProof);
+      
       addSecurityLog("User authenticated with biometrics", "success");
+      addSecurityLog("Local encryption initialized from biometric seed", "info");
+      
+      toast({
+        title: "Biometric Login Successful",
+        description: "Authenticated using biometric verification",
+      });
       
       console.log('Biometric authentication successful');
     } catch (error) {
       console.error('Biometric authentication failed:', error);
       addSecurityLog("Biometric authentication failed", "error");
+      
+      if (error instanceof WebAuthnError) {
+        toast({
+          title: "Biometric Authentication Failed",
+          description: "Please try using your password or check your biometric settings",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Authentication Error",
+          description: error instanceof Error ? error.message : "Biometric authentication failed",
+          variant: "destructive"
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -126,27 +258,77 @@ export default function SecureVaultApp() {
 
   const handleWebAuthnLogin = async () => {
     setIsLoading(true);
-    console.log('WebAuthn/FIDO2 authentication attempt');
+    addSecurityLog('WebAuthn authentication attempt', "info");
     
     try {
-      // Simulate WebAuthn authentication
-      await new Promise(resolve => setTimeout(resolve, 1200));
+      // For WebAuthn login, we need to prompt for email first
+      const email = localStorage.getItem('lastEmail') || prompt('Enter your email for WebAuthn authentication:') || 'user@example.com';
       
-      // In real implementation, this would use @simplewebauthn/browser
+      // Get WebAuthn challenge
+      const challenge = await AuthService.getWebAuthnAuthenticationChallenge({ email });
+      
+      // Request WebAuthn credential from user
+      const credential = await navigator.credentials.get({
+        publicKey: {
+          ...challenge,
+          userVerification: 'preferred' // Allow both security keys and platform authenticators
+        }
+      });
+      
+      if (!credential) {
+        throw new WebAuthnError('No credential received from authenticator');
+      }
+      
+      // Complete authentication with backend
+      const authResult: AuthResult = await AuthService.completeWebAuthnAuthentication(credential);
+      
+      // Generate local encryption key using WebAuthn authentication
+      const webauthnSeed = `webauthn_${authResult.user.id}_${Date.now()}`;
+      const userKey = deriveUserKey(webauthnSeed, email);
+      const zkProof = generateZKProof(webauthnSeed, email);
+      
       const userData: UserData = {
-        email: "webauthn@user.local",
-        userKey: "webauthn_key_789",
-        zkProof: "webauthn_proof_abc"
+        email: authResult.user.email,
+        userKey,
+        zkProof,
+        userId: authResult.user.id,
+        accessToken: authResult.accessToken,
+        sessionId: authResult.sessionId
       };
       
       setUser(userData);
       setEncryptionStatus("active");
-      addSecurityLog("User authenticated with WebAuthn/FIDO2", "success");
+      
+      // Store encryption keys for session restoration
+      localStorage.setItem('userKey', userKey);
+      localStorage.setItem('zkProof', zkProof);
+      
+      addSecurityLog("User authenticated with WebAuthn", "success");
+      addSecurityLog("Local encryption initialized from WebAuthn seed", "info");
+      
+      toast({
+        title: "WebAuthn Login Successful",
+        description: "Authenticated using security key or device authenticator",
+      });
       
       console.log('WebAuthn authentication successful');
     } catch (error) {
       console.error('WebAuthn authentication failed:', error);
       addSecurityLog("WebAuthn authentication failed", "error");
+      
+      if (error instanceof WebAuthnError) {
+        toast({
+          title: "WebAuthn Authentication Failed",
+          description: "Please check your security key or try another authentication method",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Authentication Error",
+          description: error instanceof Error ? error.message : "WebAuthn authentication failed",
+          variant: "destructive"
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -154,46 +336,125 @@ export default function SecureVaultApp() {
 
   const handlePasswordlessLogin = async (email: string) => {
     setIsLoading(true);
-    console.log('Passwordless authentication attempt for:', email);
+    addSecurityLog(`Passwordless authentication attempt for: ${email}`, "info");
     
     try {
-      // Simulate sending magic link
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // Store email for future use
+      localStorage.setItem('lastEmail', email);
       
-      addSecurityLog(`Magic link sent to ${email}`, "success");
-      addSecurityLog("Push notification sent for MFA approval", "info");
+      // Initiate passwordless authentication (magic link simulation)
+      const result = await AuthService.initiatePasswordlessLogin(email);
       
-      // Simulate user clicking magic link and MFA approval
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      addSecurityLog("Passwordless authentication initiated", "info");
       
-      const userData: UserData = {
-        email,
-        userKey: "passwordless_key_def",
-        zkProof: "passwordless_proof_ghi"
-      };
+      toast({
+        title: "Magic Link Sent",
+        description: result.message || `Check your email for the magic link`,
+      });
       
-      setUser(userData);
-      setEncryptionStatus("active");
-      addSecurityLog("User authenticated with passwordless magic link", "success");
-      addSecurityLog("Push notification MFA approved", "success");
+      // In a real implementation, this would redirect to a "check your email" page
+      // For demo purposes, we'll simulate clicking the magic link after a delay
+      setTimeout(async () => {
+        try {
+          // Simulate magic link token (in real app, this comes from email)
+          const mockToken = 'mock_magic_link_token_' + Date.now();
+          
+          // For demo, we'll complete the login automatically
+          // In real implementation, this would be triggered by the magic link
+          const passwordlessSeed = `passwordless_${email}_${Date.now()}`;
+          const userKey = deriveUserKey(passwordlessSeed, email);
+          const zkProof = generateZKProof(passwordlessSeed, email);
+          
+          // Simulate successful passwordless authentication
+          const userData: UserData = {
+            email,
+            userKey,
+            zkProof,
+            userId: 'passwordless_user_' + Date.now(),
+            accessToken: 'mock_access_token_' + Date.now(),
+            sessionId: 'mock_session_' + Date.now()
+          };
+          
+          setUser(userData);
+          setEncryptionStatus("active");
+          
+          // Store encryption keys for session restoration
+          localStorage.setItem('userKey', userKey);
+          localStorage.setItem('zkProof', zkProof);
+          
+          addSecurityLog("User authenticated with passwordless magic link", "success");
+          addSecurityLog("Local encryption initialized from passwordless seed", "info");
+          
+          toast({
+            title: "Passwordless Login Successful",
+            description: "Successfully authenticated via magic link",
+          });
+        } catch (error) {
+          console.error('Magic link authentication failed:', error);
+          addSecurityLog("Magic link authentication failed", "error");
+          
+          toast({
+            title: "Magic Link Failed",
+            description: "Please try again or use another authentication method",
+            variant: "destructive"
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      }, 3000); // Simulate 3 second delay for magic link
       
-      console.log('Passwordless authentication successful');
+      console.log('Passwordless authentication initiated');
     } catch (error) {
       console.error('Passwordless authentication failed:', error);
       addSecurityLog("Passwordless authentication failed", "error");
-    } finally {
+      
+      toast({
+        title: "Passwordless Authentication Failed",
+        description: error instanceof Error ? error.message : "Failed to send magic link",
+        variant: "destructive"
+      });
+      
       setIsLoading(false);
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     console.log('Logging out user');
-    setUser(null);
-    setEncryptionStatus("initializing");
-    addSecurityLog("User session terminated", "info");
+    addSecurityLog("User session termination initiated", "info");
     
-    // Clear any sensitive data from memory
-    // In real implementation, this would clear encrypted storage
+    try {
+      // Logout from backend
+      await AuthService.logout();
+      
+      setUser(null);
+      setEncryptionStatus("initializing");
+      
+      // Clear stored encryption keys
+      localStorage.removeItem('userKey');
+      localStorage.removeItem('zkProof');
+      
+      addSecurityLog("User session terminated successfully", "info");
+      addSecurityLog("Local encryption data cleared", "info");
+      
+      toast({
+        title: "Logged Out",
+        description: "You have been securely logged out",
+      });
+      
+      // Clear any sensitive data from memory
+      // In real implementation, this would clear encrypted storage
+    } catch (error) {
+      console.error('Logout error:', error);
+      addSecurityLog("Logout error occurred", "warning");
+      
+      // Still clear local state even if backend logout fails
+      setUser(null);
+      setEncryptionStatus("initializing");
+      
+      // Clear stored encryption keys
+      localStorage.removeItem('userKey');
+      localStorage.removeItem('zkProof');
+    }
   };
 
   const handleAutofill = async (entryId: string) => {
@@ -264,8 +525,8 @@ export default function SecureVaultApp() {
         onPasswordlessLogin={handlePasswordlessLogin}
         encryptionStatus={encryptionStatus}
         isLoading={isLoading}
-        supportsBiometric={true}
-        supportsWebAuthn={true}
+        supportsBiometric={supportsBiometric}
+        supportsWebAuthn={supportsWebAuthn}
       />
     );
   }
