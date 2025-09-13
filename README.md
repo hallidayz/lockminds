@@ -187,7 +187,7 @@ For support, feature requests, or bug reports:
 ## 🔒 Security Disclosure
 
 Found a security vulnerability? Please report it responsibly:
-- Email: security@lockminds.com
+- Email: security@acminds.com
 - PGP Key: [Available on request]
 - We'll respond within 24 hours
 
