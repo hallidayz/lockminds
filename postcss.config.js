@@ -3,4 +3,5 @@ export default {
     tailwindcss: {},
     autoprefixer: {},
   },
+  from: undefined, // Fix PostCSS warning about missing 'from' option
 }

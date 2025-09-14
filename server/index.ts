@@ -82,7 +82,7 @@ app.use((req, res, next) => {
 
   // Smart port selection with HTTPS support
   const startPort = parseInt(process.env.PORT || '3001', 10);
-  const useHttps = process.env.USE_HTTPS === 'true' || process.env.NODE_ENV === 'production';
+  const useHttps = process.env.USE_HTTPS === 'true' || process.env.NODE_ENV === 'production' || true; // Always use HTTPS
   
   const findAvailablePort = (port: number): Promise<number> => {
     return new Promise((resolve, reject) => {
