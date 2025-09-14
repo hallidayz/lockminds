@@ -527,6 +527,7 @@ export default function SecureVaultApp() {
         isLoading={isLoading}
         supportsBiometric={supportsBiometric}
         supportsWebAuthn={supportsWebAuthn}
+        isAuthenticated={!!user}
       />
     );
   }
