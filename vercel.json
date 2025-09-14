@@ -18,6 +18,13 @@
   ],
   "env": {
     "SESSION_SECRET": "@session-secret",
-    "DATABASE_URL": "@database-url"
+    "DATABASE_URL": "@database-url",
+    "NODE_ENV": "production",
+    "USE_HTTPS": "true"
+  },
+  "functions": {
+    "server/index.ts": {
+      "maxDuration": 30
+    }
   }
 }

@@ -1,34 +1,12 @@
 import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import { createServer } from 'http';
-import { createServer as createHttpsServer } from 'https';
-import fs from 'fs';
-import path from 'path';
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-// Security headers middleware
-app.use((req, res, next) => {
-  // Force HTTPS in production
-  if (process.env.NODE_ENV === 'production' && req.header('x-forwarded-proto') !== 'https') {
-    res.redirect(`https://${req.header('host')}${req.url}`);
-    return;
-  }
-  
-  // Security headers
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'");
-  
-  next();
-});
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -80,9 +58,8 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Smart port selection with HTTPS support
+  // Smart port selection - finds an available port automatically
   const startPort = parseInt(process.env.PORT || '3001', 10);
-  const useHttps = process.env.USE_HTTPS === 'true' || process.env.NODE_ENV === 'production';
   
   const findAvailablePort = (port: number): Promise<number> => {
     return new Promise((resolve, reject) => {
@@ -98,6 +75,7 @@ app.use((req, res, next) => {
       
       testServer.on('error', (err: any) => {
         if (err.code === 'EADDRINUSE') {
+          // Port is busy, try the next one
           findAvailablePort(port + 1).then(resolve).catch(reject);
         } else {
           reject(err);
@@ -107,38 +85,15 @@ app.use((req, res, next) => {
   };
 
   findAvailablePort(startPort).then((port) => {
-    if (useHttps) {
-      // Try to load SSL certificates
-      try {
-        const privateKey = fs.readFileSync('ssl/private-key.pem', 'utf8');
-        const certificate = fs.readFileSync('ssl/certificate.pem', 'utf8');
-        
-        const httpsServer = createHttpsServer({
-          key: privateKey,
-          cert: certificate
-        }, app);
-        
-        httpsServer.listen(port, "0.0.0.0", () => {
-          log(`🔒 LockMiNDS is running securely on port ${port}`);
-          log(`🌐 Open your browser: https://localhost:${port}`);
-          log(`📱 Or try: https://127.0.0.1:${port}`);
-          log(`⚠️  You may see a security warning - click "Advanced" and "Proceed"`);
-        });
-      } catch (error) {
-        log(`❌ SSL certificates not found. Run: node generate-ssl.mjs`);
-        log(`🔄 Falling back to HTTP...`);
-        
-        server.listen(port, "0.0.0.0", () => {
-          log(`🚀 LockMiNDS is running on port ${port} (HTTP)`);
-          log(`🌐 Open your browser: http://localhost:${port}`);
-        });
-      }
-    } else {
-      server.listen(port, "0.0.0.0", () => {
-        log(`🚀 LockMiNDS is running on port ${port} (HTTP)`);
-        log(`🌐 Open your browser: http://localhost:${port}`);
-      });
-    }
+    server.listen({
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    }, () => {
+      log(`🚀 LockMiNDS is running on port ${port}`);
+      log(`🌐 Open your browser: http://localhost:${port}`);
+      log(`📱 Or try: http://127.0.0.1:${port}`);
+    });
   }).catch((err) => {
     log(`❌ Failed to start server: ${err.message}`);
     process.exit(1);
