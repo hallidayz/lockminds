@@ -20,6 +20,7 @@ import {
   Eye, 
   Settings,
   Share2,
+  Fingerprint,
   Lock,
   LogOut
 } from "lucide-react";
@@ -84,6 +85,12 @@ export default function LockingMiNDSSidebar({
       title: "Share & Export",
       view: "share-export",
       icon: Share2,
+      count: undefined,
+    },
+    {
+      title: "Biometric Setup",
+      view: "biometric-setup",
+      icon: Fingerprint,
       count: undefined,
     }
   ];

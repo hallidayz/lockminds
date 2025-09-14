@@ -8,6 +8,7 @@ import AddEntryForm from "./AddEntryForm";
 import SecurityDashboard from "./SecurityDashboard";
 import Settings from "./Settings";
 import ShareExport from "./ShareExport";
+import BiometricSetup from "./BiometricSetup";
 import { Settings as SettingsIcon, Shield, Plus, Grid3X3, LogOut } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { 
@@ -388,6 +389,11 @@ export default function LockingMiNDSMain({
             {/* Share & Export */}
             {activeView === "share-export" && (
               <ShareExport user={user} />
+            )}
+
+            {/* Biometric Setup */}
+            {activeView === "biometric-setup" && (
+              <BiometricSetup user={user} />
             )}
           </main>
         </div>
