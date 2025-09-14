@@ -7,6 +7,7 @@ import LockingMiNDSEntry from "./LockingMiNDSEntry";
 import AddEntryForm from "./AddEntryForm";
 import SecurityDashboard from "./SecurityDashboard";
 import Settings from "./Settings";
+import ShareExport from "./ShareExport";
 import { Settings as SettingsIcon, Shield, Plus, Grid3X3, LogOut } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { 
@@ -382,6 +383,11 @@ export default function LockingMiNDSMain({
             {/* Settings */}
             {activeView === "settings" && (
               <Settings user={user} />
+            )}
+
+            {/* Share & Export */}
+            {activeView === "share-export" && (
+              <ShareExport user={user} />
             )}
           </main>
         </div>

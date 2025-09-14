@@ -3,24 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
-  Cloud, 
-  Shield, 
-  Smartphone, 
-  Key, 
-  Download, 
-  Upload, 
-  RefreshCw,
-  CheckCircle,
-  AlertCircle,
   Settings as SettingsIcon,
-  Lock,
-  Globe,
-  Database
+  HardDrive,
+  Cloud,
+  ChevronDown
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -36,163 +24,25 @@ interface SettingsProps {
   };
 }
 
-interface CloudConnection {
-  id: string;
-  name: string;
-  provider: string;
-  status: "connected" | "disconnected" | "error";
-  lastSync?: string;
-  icon: any;
-}
-
-interface VaultBackup {
-  id: string;
-  timestamp: string;
-  size: string;
-  location: string;
-  encrypted: boolean;
-}
-
 export default function Settings({ user }: SettingsProps) {
   const { toast } = useToast();
-  const [autoBackup, setAutoBackup] = useState(true);
-  const [backupFrequency, setBackupFrequency] = useState("daily");
-  const [encryptBackups, setEncryptBackups] = useState(true);
-  
-  // Mock cloud connections
-  const [cloudConnections, setCloudConnections] = useState<CloudConnection[]>([
-    {
-      id: "dropbox",
-      name: "Dropbox",
-      provider: "dropbox",
-      status: "disconnected",
-      icon: Cloud
-    },
-    {
-      id: "onedrive",
-      name: "OneDrive",
-      provider: "microsoft",
-      status: "disconnected",
-      icon: Cloud
-    },
-    {
-      id: "replit-storage",
-      name: "Replit Object Storage",
-      provider: "replit",
-      status: "connected",
-      lastSync: "2025-09-13T16:30:00Z",
-      icon: Database
-    }
-  ]);
+  const [backupLocation, setBackupLocation] = useState<"local" | "online">("local");
+  const [importFormat, setImportFormat] = useState<string>("");
 
-  // Mock backup history
-  const [backupHistory] = useState<VaultBackup[]>([
-    {
-      id: "1",
-      timestamp: "2025-09-13T16:30:00Z",
-      size: "2.3 MB",
-      location: "Replit Storage",
-      encrypted: true
-    },
-    {
-      id: "2", 
-      timestamp: "2025-09-12T16:30:00Z",
-      size: "2.2 MB",
-      location: "Replit Storage",
-      encrypted: true
-    }
-  ]);
-
-  const handleConnectCloud = async (connectionId: string) => {
-    try {
-      // Mock connection logic
-      setCloudConnections(prev => 
-        prev.map(conn => 
-          conn.id === connectionId 
-            ? { ...conn, status: "connected", lastSync: new Date().toISOString() }
-            : conn
-        )
-      );
-      
-      toast({
-        title: "Connection successful",
-        description: `Successfully connected to ${cloudConnections.find(c => c.id === connectionId)?.name}`,
-      });
-    } catch (error) {
-      toast({
-        title: "Connection failed",
-        description: "Failed to connect to cloud storage",
-        variant: "destructive",
-      });
-    }
+  const handleBackupLocationChange = (location: "local" | "online") => {
+    setBackupLocation(location);
+    toast({
+      title: "Backup Location Updated",
+      description: `Backup location set to ${location === "local" ? "Local Storage" : "Online Drive"}`,
+    });
   };
 
-  const handleDisconnectCloud = async (connectionId: string) => {
-    try {
-      setCloudConnections(prev => 
-        prev.map(conn => 
-          conn.id === connectionId 
-            ? { ...conn, status: "disconnected", lastSync: undefined }
-            : conn
-        )
-      );
-      
-      toast({
-        title: "Disconnected",
-        description: `Disconnected from ${cloudConnections.find(c => c.id === connectionId)?.name}`,
-      });
-    } catch (error) {
-      toast({
-        title: "Disconnect failed",
-        description: "Failed to disconnect from cloud storage",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleManualBackup = async () => {
-    try {
-      toast({
-        title: "Backup initiated",
-        description: "Creating encrypted vault backup...",
-      });
-      
-      // Mock backup creation
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      toast({
-        title: "Backup completed",
-        description: "Vault backup created successfully",
-      });
-    } catch (error) {
-      toast({
-        title: "Backup failed",
-        description: "Failed to create vault backup",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "connected":
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case "error":
-        return <AlertCircle className="h-4 w-4 text-red-500" />;
-      default:
-        return <AlertCircle className="h-4 w-4 text-gray-400" />;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "connected":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-      case "error":
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
-    }
+  const handleImportFormatChange = (format: string) => {
+    setImportFormat(format);
+    toast({
+      title: "Import Format Updated",
+      description: `Import format set to ${format}`,
+    });
   };
 
   return (

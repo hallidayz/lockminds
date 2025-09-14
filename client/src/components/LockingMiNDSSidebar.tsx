@@ -19,6 +19,7 @@ import {
   CreditCard, 
   Eye, 
   Settings,
+  Share2,
   Lock,
   LogOut
 } from "lucide-react";
@@ -77,6 +78,12 @@ export default function LockingMiNDSSidebar({
       title: "Settings",
       view: "settings",
       icon: Settings,
+      count: undefined,
+    },
+    {
+      title: "Share & Export",
+      view: "share-export",
+      icon: Share2,
       count: undefined,
     }
   ];
