@@ -9,6 +9,7 @@ import SecurityDashboard from "./SecurityDashboard";
 import Settings from "./Settings";
 import ShareExport from "./ShareExport";
 import BiometricSetup from "./BiometricSetup";
+import TOTPGenerator from "./TOTPGenerator";
 import { Settings as SettingsIcon, Shield, Plus, Grid3X3, LogOut } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { 
@@ -394,6 +395,11 @@ export default function LockingMiNDSMain({
             {/* Biometric Setup */}
             {activeView === "biometric-setup" && (
               <BiometricSetup user={user} />
+            )}
+
+            {/* TOTP MFA Generator */}
+            {activeView === "totp-generator" && (
+              <TOTPGenerator user={user} />
             )}
           </main>
         </div>

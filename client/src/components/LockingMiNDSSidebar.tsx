@@ -21,6 +21,7 @@ import {
   Settings,
   Share2,
   Fingerprint,
+  Clock,
   Lock,
   LogOut
 } from "lucide-react";
@@ -91,6 +92,12 @@ export default function LockingMiNDSSidebar({
       title: "Biometric Setup",
       view: "biometric-setup",
       icon: Fingerprint,
+      count: undefined,
+    },
+    {
+      title: "TOTP Generator",
+      view: "totp-generator",
+      icon: Clock,
       count: undefined,
     }
   ];
