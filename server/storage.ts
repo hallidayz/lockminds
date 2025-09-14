@@ -135,16 +135,11 @@ export class MemStorage implements IStorage {
     const vaultEntry: VaultEntry = { 
       ...entry,
       id, 
+      userId: entry.userId,
       createdAt: new Date(), 
-      updatedAt: new Date(),
-      // Ensure null instead of undefined for optional fields
-      url: entry.url ?? null,
-      username: entry.username ?? null,
-      password: entry.password ?? null,
-      twoFA: entry.twoFA ?? null,
-      cardNumber: entry.cardNumber ?? null,
-      expiryDate: entry.expiryDate ?? null,
-      cvv: entry.cvv ?? null
+      updatedAt: new Date()
+      // Remove all plaintext fields - they don't exist in the zero-trust schema
+      // All sensitive data is encrypted in the encryptedData field
     };
     this.vaultEntries.set(id, vaultEntry);
     return vaultEntry;

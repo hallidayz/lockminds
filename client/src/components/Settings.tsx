@@ -29,6 +29,10 @@ interface SettingsProps {
     email: string;
     userKey: string;
     zkProof: string;
+    userId: string;
+    accessToken: string;
+    sessionId: string;
+    masterPassword: string;
   };
 }
 

@@ -20,7 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface VaultEntryProps {
+interface LockingMiNDSEntryProps {
   entry: {
     id: string;
     name: string;
@@ -38,7 +38,7 @@ interface VaultEntryProps {
   onAutofill?: (id: string) => void;
 }
 
-export default function VaultEntry({ entry, onEdit, onDelete, onAutofill }: VaultEntryProps) {
+export default function LockingMiNDSEntry({ entry, onEdit, onDelete, onAutofill }: LockingMiNDSEntryProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showCardDetails, setShowCardDetails] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);

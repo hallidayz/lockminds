@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import lockMindLogo from "@assets/LockingMiNDS.png";
 
-interface VaultSidebarProps {
+interface LockingMiNDSSidebarProps {
   activeView: string;
   onViewChange: (view: string) => void;
   onAddEntry: () => void;
@@ -38,7 +38,7 @@ interface VaultSidebarProps {
   };
 }
 
-export default function VaultSidebar({ 
+export default function LockingMiNDSSidebar({ 
   activeView, 
   onViewChange, 
   onAddEntry,
@@ -46,7 +46,7 @@ export default function VaultSidebar({
   searchQuery, 
   onSearchChange,
   entryCount 
-}: VaultSidebarProps) {
+}: LockingMiNDSSidebarProps) {
   
   const menuItems = [
     {

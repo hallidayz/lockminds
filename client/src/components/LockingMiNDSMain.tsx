@@ -2,8 +2,8 @@ import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
-import VaultSidebar from "./VaultSidebar";
-import VaultEntry from "./VaultEntry";
+import LockingMiNDSSidebar from "./LockingMiNDSSidebar";
+import LockingMiNDSEntry from "./LockingMiNDSEntry";
 import AddEntryForm from "./AddEntryForm";
 import SecurityDashboard from "./SecurityDashboard";
 import Settings from "./Settings";
@@ -26,11 +26,15 @@ interface SecurityLog {
   type: "info" | "warning" | "success" | "error";
 }
 
-interface VaultMainProps {
+interface LockingMiNDSMainProps {
   user: {
     email: string;
+    userKey: string;
+    zkProof: string;
+    userId: string;
+    accessToken: string;
+    sessionId: string;
     masterPassword: string; // Use actual master password for PBKDF2 (zero-trust)
-    // NOTE: Removed userKey and zkProof - were cryptographically insecure
   };
   onLogout: () => void;
   encryptionStatus: string;
@@ -39,14 +43,14 @@ interface VaultMainProps {
   onAutofill: (entryId: string) => void;
 }
 
-export default function VaultMain({ 
+export default function LockingMiNDSMain({ 
   user, 
   onLogout, 
   encryptionStatus, 
   clickjackingProtection,
   onToggleClickjackingProtection,
   onAutofill 
-}: VaultMainProps) {
+}: LockingMiNDSMainProps) {
   const [activeView, setActiveView] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddEntry, setShowAddEntry] = useState(false);
@@ -267,7 +271,7 @@ export default function VaultMain({
   return (
     <SidebarProvider style={style as React.CSSProperties}>
       <div className="flex h-screen w-full bg-background overflow-hidden">
-        <VaultSidebar
+        <LockingMiNDSSidebar
           activeView={activeView}
           onViewChange={setActiveView}
           onAddEntry={() => setShowAddEntry(true)}
@@ -351,7 +355,7 @@ export default function VaultMain({
                 ) : (
                   <div className="grid gap-4">
                     {filteredEntries.map((entry) => (
-                      <VaultEntry
+                      <LockingMiNDSEntry
                         key={entry.id}
                         entry={entry}
                         onEdit={handleEditEntry}

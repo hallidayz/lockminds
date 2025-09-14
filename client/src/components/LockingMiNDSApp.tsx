@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import MasterPasswordScreen from "./MasterPasswordScreen";
-import VaultMain from "./VaultMain";
+import LockingMiNDSMain from "./LockingMiNDSMain";
 import { AuthService, AuthResult, User, AuthError, WebAuthnError } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 
@@ -11,6 +11,7 @@ interface UserData {
   userId: string;
   accessToken: string;
   sessionId: string;
+  masterPassword: string; // Required for LockingMiNDSMain component
 }
 
 interface SecurityLog {
@@ -20,7 +21,7 @@ interface SecurityLog {
   type: "info" | "warning" | "success" | "error";
 }
 
-export default function SecureVaultApp() {
+export default function LockingMiNDSApp() {
   const [user, setUser] = useState<UserData | null>(null);
   const [encryptionStatus, setEncryptionStatus] = useState<string>("initializing");
   const [clickjackingProtection, setClickjackingProtection] = useState<boolean>(true);
@@ -59,7 +60,8 @@ export default function SecureVaultApp() {
                 zkProof,
                 userId: currentUser.id,
                 accessToken: AuthService.getAccessToken() || '',
-                sessionId: localStorage.getItem('sessionId') || ''
+                sessionId: localStorage.getItem('sessionId') || '',
+                masterPassword: '' // Placeholder for restored session - will be updated on login
               };
               
               setUser(userData);
@@ -154,7 +156,8 @@ export default function SecureVaultApp() {
         zkProof,
         userId: authResult.user.id,
         accessToken: authResult.accessToken,
-        sessionId: authResult.sessionId
+        sessionId: authResult.sessionId,
+        masterPassword: masterPassword // Use the actual master password for encryption
       };
       
       setUser(userData);
@@ -215,7 +218,8 @@ export default function SecureVaultApp() {
         zkProof,
         userId: authResult.user.id,
         accessToken: authResult.accessToken,
-        sessionId: authResult.sessionId
+        sessionId: authResult.sessionId,
+        masterPassword: '' // Placeholder for biometric login - no master password available
       };
       
       setUser(userData);
@@ -293,7 +297,8 @@ export default function SecureVaultApp() {
         zkProof,
         userId: authResult.user.id,
         accessToken: authResult.accessToken,
-        sessionId: authResult.sessionId
+        sessionId: authResult.sessionId,
+        masterPassword: '' // Placeholder for WebAuthn login - no master password available
       };
       
       setUser(userData);
@@ -372,7 +377,8 @@ export default function SecureVaultApp() {
             zkProof,
             userId: 'passwordless_user_' + Date.now(),
             accessToken: 'mock_access_token_' + Date.now(),
-            sessionId: 'mock_session_' + Date.now()
+            sessionId: 'mock_session_' + Date.now(),
+            masterPassword: '' // Placeholder for passwordless login - no master password available
           };
           
           setUser(userData);
@@ -532,14 +538,14 @@ export default function SecureVaultApp() {
     );
   }
 
-  return (
-    <VaultMain
-      user={user}
-      onLogout={handleLogout}
-      encryptionStatus={encryptionStatus}
-      clickjackingProtection={clickjackingProtection}
-      onToggleClickjackingProtection={toggleClickjackingProtection}
-      onAutofill={handleAutofill}
-    />
-  );
+    return (
+      <LockingMiNDSMain
+        user={user}
+        onLogout={handleLogout}
+        encryptionStatus={encryptionStatus}
+        clickjackingProtection={clickjackingProtection}
+        onToggleClickjackingProtection={toggleClickjackingProtection}
+        onAutofill={handleAutofill}
+      />
+    );
 }

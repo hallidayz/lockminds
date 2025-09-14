@@ -1,4 +1,4 @@
-import VaultEntry from '../VaultEntry';
+import LockingMiNDSEntry from '../LockingMiNDSEntry';
 
 const sampleLoginEntry = {
   id: "1",
@@ -19,17 +19,17 @@ const samplePaymentEntry = {
   cvv: "123"
 };
 
-export default function VaultEntryExample() {
+export default function LockingMiNDSEntryExample() {
   return (
     <div className="space-y-4 p-4 max-w-md">
-      <VaultEntry 
+      <LockingMiNDSEntry 
         entry={sampleLoginEntry}
         onEdit={(id) => console.log('Edit entry:', id)}
         onDelete={(id) => console.log('Delete entry:', id)}
         onAutofill={(id) => console.log('Autofill entry:', id)}
       />
       
-      <VaultEntry 
+      <LockingMiNDSEntry 
         entry={samplePaymentEntry}
         onEdit={(id) => console.log('Edit entry:', id)}
         onDelete={(id) => console.log('Delete entry:', id)}

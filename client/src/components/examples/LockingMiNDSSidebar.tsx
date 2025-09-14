@@ -1,7 +1,7 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
-import VaultSidebar from '../VaultSidebar';
+import LockingMiNDSSidebar from '../LockingMiNDSSidebar';
 
-export default function VaultSidebarExample() {
+export default function LockingMiNDSSidebarExample() {
   //todo: remove mock functionality
   const mockEntryCount = {
     total: 12,
@@ -17,7 +17,7 @@ export default function VaultSidebarExample() {
   return (
     <SidebarProvider style={style as React.CSSProperties}>
       <div className="flex h-screen w-full">
-        <VaultSidebar 
+        <LockingMiNDSSidebar 
           activeView="all"
           onViewChange={(view) => console.log('View changed to:', view)}
           onAddEntry={() => console.log('Add entry clicked')}

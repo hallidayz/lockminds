@@ -1,15 +1,19 @@
-import VaultMain from '../VaultMain';
+import LockingMiNDSMain from '../LockingMiNDSMain';
 
 //todo: remove mock functionality
 const mockUser = {
   email: "user@example.com",
   userKey: "abc123key",
-  zkProof: "zkproof456"
+  zkProof: "zkproof456",
+  userId: "mock-user-id",
+  accessToken: "mock-access-token",
+  sessionId: "mock-session-id",
+  masterPassword: "mockPassword123"
 };
 
-export default function VaultMainExample() {
+export default function LockingMiNDSMainExample() {
   return (
-    <VaultMain 
+    <LockingMiNDSMain 
       user={mockUser}
       onLogout={() => console.log('Logout triggered')}
       encryptionStatus="active"

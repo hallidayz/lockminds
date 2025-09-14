@@ -357,7 +357,7 @@ export default function MasterPasswordScreen({
                 <div className="text-center mt-4 space-y-2">
                   <Button
                     type="button"
-                    variant="link"
+                    variant="ghost"
                     className="text-sm text-muted-foreground hover:text-primary"
                     onClick={() => setShowForgotPassword(true)}
                     data-testid="button-forgot-password"
@@ -367,7 +367,7 @@ export default function MasterPasswordScreen({
                   <div>
                     <Button
                       type="button"
-                      variant="link"
+                      variant="ghost"
                       className="text-sm text-muted-foreground hover:text-primary"
                       onClick={() => setShowRegistration(true)}
                       data-testid="button-sign-up"
@@ -399,7 +399,7 @@ export default function MasterPasswordScreen({
                 <div className="text-center">
                   <Button
                     type="button"
-                    variant="link"
+                    variant="ghost"
                     className="text-sm text-muted-foreground hover:text-primary"
                     onClick={() => setShowRegistration(true)}
                     data-testid="button-sign-up-biometric"
@@ -430,7 +430,7 @@ export default function MasterPasswordScreen({
                 <div className="text-center">
                   <Button
                     type="button"
-                    variant="link"
+                    variant="ghost"
                     className="text-sm text-muted-foreground hover:text-primary"
                     onClick={() => setShowRegistration(true)}
                     data-testid="button-sign-up-webauthn"
@@ -471,7 +471,7 @@ export default function MasterPasswordScreen({
                 <div className="text-center">
                   <Button
                     type="button"
-                    variant="link"
+                    variant="ghost"
                     className="text-sm text-muted-foreground hover:text-primary"
                     onClick={() => setShowRegistration(true)}
                     data-testid="button-sign-up-passwordless"
@@ -591,7 +591,7 @@ export default function MasterPasswordScreen({
               <div className="text-center mt-4">
                 <Button
                   type="button"
-                  variant="link"
+                  variant="ghost"
                   className="text-sm"
                   onClick={() => {
                     setShowForgotPassword(false);
