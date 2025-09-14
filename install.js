@@ -5,7 +5,7 @@ import { writeFileSync, existsSync, readFileSync } from 'fs';
 import { randomBytes } from 'crypto';
 import { join } from 'path';
 
-console.log('🔐 LockMiNDS - Automated Installation');
+console.log('🔐 LockingMiNDS - Automated Installation');
 console.log('=====================================\n');
 
 // Generate secure session secret
@@ -13,7 +13,7 @@ const sessionSecret = randomBytes(32).toString('hex');
 console.log('✅ Generated secure session secret');
 
 // Create .env file with all required variables
-const envContent = `# LockMiNDS Environment Configuration
+const envContent = `# LockingMiNDS Environment Configuration
 # This file was automatically generated during installation
 
 # JWT signing secret (automatically generated)
@@ -56,7 +56,7 @@ console.log('✅ Updated package.json with installation scripts');
 
 // Create a simple start script for Windows users
 const startScript = `@echo off
-echo Starting LockMiNDS...
+echo Starting LockingMiNDS...
 set SESSION_SECRET=${sessionSecret}
 set DATABASE_URL=file:./data/lockminds.db
 set PORT=3001
@@ -68,7 +68,7 @@ console.log('✅ Created Windows start script');
 
 // Create a simple start script for Mac/Linux users
 const startScriptUnix = `#!/bin/bash
-echo "Starting LockMiNDS..."
+echo "Starting LockingMiNDS..."
 export SESSION_SECRET="${sessionSecret}"
 export DATABASE_URL="file:./data/lockminds.db"
 export PORT=3001
@@ -81,7 +81,7 @@ console.log('✅ Created Unix start script');
 
 console.log('\n🎉 Installation Complete!');
 console.log('========================');
-console.log('Your LockMiNDS app is ready to use!');
+console.log('Your LockingMiNDS app is ready to use!');
 console.log('');
 console.log('To start the app:');
 console.log('  • Windows: Double-click start.bat');
@@ -93,4 +93,4 @@ console.log('');
 console.log('🔐 Your session secret has been automatically generated and saved.');
 console.log('📁 Database will be created automatically on first run.');
 console.log('');
-console.log('Enjoy using LockMiNDS! 🚀');
+console.log('Enjoy using LockingMiNDS! 🚀');

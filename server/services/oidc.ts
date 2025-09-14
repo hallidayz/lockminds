@@ -235,5 +235,5 @@ OIDCService.registerClient({
   redirectUris: ['http://localhost:3000/callback', 'http://localhost:5000/auth/callback'],
   responseTypes: ['code'],
   grantTypes: ['authorization_code', 'refresh_token'],
-  name: 'LockMiNDS Development Client'
+  name: 'LockingMiNDS Development Client'
 });

@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "🔐 Setting up LockMiNDS..."
+echo "🔐 Setting up LockingMiNDS..."
 
 # Generate secure secret
 SECRET=$(openssl rand -hex 32)

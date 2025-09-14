@@ -119,7 +119,7 @@ app.use((req, res, next) => {
         }, app);
         
         httpsServer.listen(port, "0.0.0.0", () => {
-          log(`🔒 LockMiNDS is running securely on port ${port}`);
+          log(`🔒 LockingMiNDS is running securely on port ${port}`);
           log(`🌐 Open your browser: https://localhost:${port}`);
           log(`📱 Or try: https://127.0.0.1:${port}`);
           log(`⚠️  You may see a security warning - click "Advanced" and "Proceed"`);
@@ -129,13 +129,13 @@ app.use((req, res, next) => {
         log(`🔄 Falling back to HTTP...`);
         
         server.listen(port, "0.0.0.0", () => {
-          log(`🚀 LockMiNDS is running on port ${port} (HTTP)`);
+          log(`🚀 LockingMiNDS is running on port ${port} (HTTP)`);
           log(`🌐 Open your browser: http://localhost:${port}`);
         });
       }
     } else {
       server.listen(port, "0.0.0.0", () => {
-        log(`🚀 LockMiNDS is running on port ${port} (HTTP)`);
+        log(`🚀 LockingMiNDS is running on port ${port} (HTTP)`);
         log(`🌐 Open your browser: http://localhost:${port}`);
       });
     }

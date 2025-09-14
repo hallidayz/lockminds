@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-// Simple test script for LockMiNDS
-console.log('🧪 Testing LockMiNDS App...\n');
+// Simple test script for LockingMiNDS
+console.log('🧪 Testing LockingMiNDS App...\n');
 
 // Test 1: Check if we're in the right directory
 const fs = require('fs');
@@ -46,7 +46,7 @@ if (fs.existsSync('node_modules')) {
 }
 
 // Test 4: Try to start the app
-console.log('\n4️⃣ Starting LockMiNDS app...');
+console.log('\n4️⃣ Starting LockingMiNDS app...');
 console.log('   🚀 Starting development server...');
 console.log('   🌐 App will be available at: http://localhost:3001');
 console.log('   📱 Or try: http://127.0.0.1:3001');

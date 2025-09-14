@@ -1,4 +1,4 @@
-// Zero-trust encryption utilities for LockMiNDS vault
+// Zero-trust encryption utilities for LockingMiNDS vault
 // All sensitive vault data must be encrypted client-side before storage/transmission
 // Uses AES-GCM with PBKDF2 key derivation for maximum security
 

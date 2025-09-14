@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Fix script for LockMiNDS server using ES modules
+// Fix script for LockingMiNDS server using ES modules
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-console.log('🔧 Fixing LockMiNDS server...\n');
+console.log('🔧 Fixing LockingMiNDS server...\n');
 
 // Read the current server file
 const serverPath = path.join(__dirname, 'server', 'index.ts');

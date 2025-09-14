@@ -90,7 +90,7 @@ app.use((req, res, next) => {
       host: "0.0.0.0",
       reusePort: true,
     }, () => {
-      log(`🚀 LockMiNDS is running on port ${port}`);
+      log(`🚀 LockingMiNDS is running on port ${port}`);
       log(`🌐 Open your browser: http://localhost:${port}`);
       log(`📱 Or try: http://127.0.0.1:${port}`);
     });

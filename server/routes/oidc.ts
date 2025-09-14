@@ -76,7 +76,7 @@ router.get('/authorize', async (req: Request, res: Response) => {
       });
     }
 
-    // For now, redirect to LockMiNDS login page with OIDC context
+    // For now, redirect to LockingMiNDS login page with OIDC context
     // In production, this would be a proper consent screen
     const authParams = new URLSearchParams({
       client_id,
@@ -88,7 +88,7 @@ router.get('/authorize', async (req: Request, res: Response) => {
       code_challenge_method: code_challenge_method || ''
     });
 
-    // Redirect to LockMiNDS login with OIDC context
+    // Redirect to LockingMiNDS login with OIDC context
     const loginUrl = `/?oidc=true&${authParams.toString()}`;
     res.redirect(loginUrl);
   } catch (error) {

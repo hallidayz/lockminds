@@ -1,7 +1,7 @@
-# LockMiNDS
+# LockingMiNDS
 **Enterprise-Grade Password Manager with Zero-Trust Architecture**
 
-LockMiNDS is a cross-platform password manager built with modern security principles, featuring quantum-resistant encryption, zero-trust architecture, and enterprise-grade authentication methods.
+LockingMiNDS is a cross-platform password manager built with modern security principles, featuring quantum-resistant encryption, zero-trust architecture, and enterprise-grade authentication methods.
 
 ## 🚀 **One-Click Installation**
 

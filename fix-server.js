@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-// Fix script for LockMiNDS server
+// Fix script for LockingMiNDS server
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔧 Fixing LockMiNDS server...\n');
+console.log('🔧 Fixing LockingMiNDS server...\n');
 
 // Read the current server file
 const serverPath = path.join(__dirname, 'server', 'index.ts');

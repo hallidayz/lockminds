@@ -1,6 +1,6 @@
-# 🚀 LockMiNDS Deployment Guide
+# 🚀 LockingMiNDS Deployment Guide
 
-This guide shows you how to deploy LockMiNDS to different platforms.
+This guide shows you how to deploy LockingMiNDS to different platforms.
 
 ## 📋 Prerequisites
 

@@ -46,7 +46,7 @@ export class PushNotificationService {
       }
 
       const payload: PushNotificationPayload = {
-        title: 'LockMiNDS Security Alert',
+        title: 'LockingMiNDS Security Alert',
         body: `Login attempt from ${challengeData.deviceName || 'unknown device'}. Approve or deny this request.`,
         data: {
           type: 'mfa_challenge',

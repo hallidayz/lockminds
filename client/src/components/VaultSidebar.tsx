@@ -22,7 +22,7 @@ import {
   Lock,
   LogOut
 } from "lucide-react";
-import lockMindLogo from "@assets/LockMind_1757775227799.png";
+import lockMindLogo from "@assets/LockingMiNDS.png";
 
 interface VaultSidebarProps {
   activeView: string;
@@ -88,9 +88,9 @@ export default function VaultSidebar({
         <SidebarGroup>
           <div className="px-3 py-2">
             <div className="flex items-center space-x-3 mb-4">
-              <img src={lockMindLogo} alt="LockMiNDS" className="h-8 w-8" />
+              <img src={lockMindLogo} alt="LockingMiNDS" className="h-8 w-8" />
               <h2 className="text-lg font-bold bg-gradient-to-r from-yellow-400 to-blue-600 bg-clip-text text-transparent">
-                LockMiNDS
+                LockingMiNDS
               </h2>
             </div>
             
