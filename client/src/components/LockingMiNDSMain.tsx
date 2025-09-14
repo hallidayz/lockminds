@@ -38,6 +38,7 @@ interface LockingMiNDSMainProps {
     accessToken: string;
     sessionId: string;
     masterPassword: string; // Use actual master password for PBKDF2 (zero-trust)
+    accountType: 'free' | 'pro';
   };
   onLogout: () => void;
   encryptionStatus: string;
@@ -282,6 +283,7 @@ export default function LockingMiNDSMain({
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           entryCount={entryCount}
+          accountType={user.accountType}
         />
 
         {/* Main Content */}

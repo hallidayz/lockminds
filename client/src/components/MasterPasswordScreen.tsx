@@ -306,19 +306,34 @@ export default function MasterPasswordScreen({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="email">Email</Label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setEmail('test@example.com');
-                      setMasterPassword('testpassword123');
-                    }}
-                    className="text-xs text-muted-foreground hover:text-foreground"
-                    title="Fill demo credentials"
-                  >
-                    🎯 Demo
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setEmail('demo@example.com');
+                        setMasterPassword('testpassword123');
+                      }}
+                      className="text-xs text-muted-foreground hover:text-foreground"
+                      title="Fill free demo credentials"
+                    >
+                      📱 Demo
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setEmail('demopro@example.com');
+                        setMasterPassword('demopro123');
+                      }}
+                      className="text-xs text-orange-600 hover:text-orange-700"
+                      title="Fill pro demo credentials"
+                    >
+                      💎 Demo Pro
+                    </Button>
+                  </div>
                 </div>
                 <Input
                   id="email"
@@ -416,7 +431,7 @@ export default function MasterPasswordScreen({
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        setEmail('test@example.com');
+                        setEmail('demo@example.com');
                         onBiometricLogin();
                       }}
                       className="text-xs"
@@ -424,6 +439,7 @@ export default function MasterPasswordScreen({
                     >
                       🎯 Demo
                     </Button>
+                  </div>
                 </div>
                 <div className="text-center">
                   <Button

@@ -9,6 +9,7 @@ export const users = pgTable("users", {
   masterPasswordHash: text("master_password_hash").notNull(), // Argon2id hash for verification
   // NOTE: Removed userKey field - was cryptographically weak (32-bit entropy)
   // NOTE: Removed zkProof field - was placeholder, not real zero-knowledge proof
+  accountType: text("account_type").notNull().default('free'), // 'free' or 'pro'
   isActive: boolean("is_active").notNull().default(true),
   lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").defaultNow(),

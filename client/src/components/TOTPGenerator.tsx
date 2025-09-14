@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { TOTPGenerator, TOTPEntry, TOTPCode } from "@/lib/totp";
+import ProFeature from "./ProFeature";
 
 interface TOTPGeneratorProps {
   user: {
@@ -30,6 +31,7 @@ interface TOTPGeneratorProps {
     accessToken: string;
     sessionId: string;
     masterPassword: string;
+    accountType: 'free' | 'pro';
   };
 }
 
@@ -188,7 +190,12 @@ export default function TOTPGeneratorComponent({ user }: TOTPGeneratorProps) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 p-4" data-testid="totp-generator-container">
+    <ProFeature 
+      featureName="Built-In MFA / TOTP Generator"
+      description="Native TOTP (RFC 6238) code generation for all entries with encrypted storage"
+      userAccountType={user.accountType}
+    >
+      <div className="max-w-4xl mx-auto space-y-6 p-4" data-testid="totp-generator-container">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
@@ -436,6 +443,7 @@ export default function TOTPGeneratorComponent({ user }: TOTPGeneratorProps) {
         </div>
         <span>Your codes are securely generated and never leave your device.</span>
       </div>
-    </div>
+      </div>
+    </ProFeature>
   );
 }

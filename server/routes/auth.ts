@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { storage } from '../storage';
 import { JWTService } from '../utils/jwt';
 import { WebAuthnService } from '../services/webauthn';
@@ -192,7 +192,8 @@ router.post('/login', async (req: Request, res: Response) => {
       expiresAt: tokenData.expiresAt,
       user: {
         id: user.id,
-        email: user.email
+        email: user.email,
+        accountType: user.accountType
       },
       requiresMfa: riskAssessment.requiresAdditionalAuth,
       riskScore: riskAssessment.overallRisk
@@ -576,6 +577,7 @@ router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res: Resp
     res.json({
       id: user.id,
       email: user.email,
+      accountType: user.accountType,
       isActive: user.isActive,
       createdAt: user.createdAt
     });

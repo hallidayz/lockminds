@@ -6,7 +6,6 @@ import {
   Fingerprint,
   Monitor,
   Apple,
-  Linux,
   Shield,
   CheckCircle,
   XCircle,
@@ -25,6 +24,7 @@ interface BiometricSetupProps {
     accessToken: string;
     sessionId: string;
     masterPassword: string;
+    accountType: 'free' | 'pro';
   };
 }
 
@@ -78,7 +78,7 @@ export default function BiometricSetup({ user }: BiometricSetupProps) {
       description: "Face, fingerprint, or PIN (Windows 10+)",
       icon: Monitor,
       platform: "windows",
-      status: platform === "windows" ? "available" : "unavailable",
+      status: platformInfo?.os === "windows" ? "available" : "unavailable",
       requirements: "Windows 10 or later",
       minVersion: "10.0"
     },
@@ -88,7 +88,7 @@ export default function BiometricSetup({ user }: BiometricSetupProps) {
       description: "Touch ID sensor (macOS 10.12+)",
       icon: Apple,
       platform: "macos",
-      status: platform === "macos" ? "available" : "unavailable",
+      status: platformInfo?.os === "macos" ? "available" : "unavailable",
       requirements: "macOS 10.12 or later with Touch ID",
       minVersion: "10.12"
     },
@@ -96,9 +96,9 @@ export default function BiometricSetup({ user }: BiometricSetupProps) {
       id: "linux-fprint",
       name: "Linux fprint / YubiKey",
       description: "Fingerprint or security key (Linux)",
-      icon: Linux,
+      icon: Shield,
       platform: "linux",
-      status: platform === "linux" ? "available" : "unavailable",
+      status: platformInfo?.os === "linux" ? "available" : "unavailable",
       requirements: "Linux with fprintd or YubiKey support"
     }
   ];

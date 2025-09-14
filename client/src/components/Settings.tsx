@@ -8,9 +8,14 @@ import {
   Settings as SettingsIcon,
   HardDrive,
   Cloud,
-  ChevronDown
+  ChevronDown,
+  Shield,
+  Zap,
+  Eye,
+  Bell
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import ProFeature from "./ProFeature";
 
 interface SettingsProps {
   user: {
@@ -21,6 +26,7 @@ interface SettingsProps {
     accessToken: string;
     sessionId: string;
     masterPassword: string;
+    accountType: 'free' | 'pro';
   };
 }
 
@@ -50,306 +56,182 @@ export default function Settings({ user }: SettingsProps) {
       <div className="flex items-center space-x-3 mb-6">
         <SettingsIcon className="h-6 w-6 text-muted-foreground" />
         <div>
-          <h1 className="text-2xl font-bold" data-testid="text-settings-title">Settings</h1>
+          <h1 className="text-2xl font-bold" data-testid="text-settings-title">Backup & Import</h1>
           <p className="text-muted-foreground" data-testid="text-settings-subtitle">
-            Manage your vault settings and external connections
+            Manage your vault backups and import options
           </p>
         </div>
       </div>
 
-      <Tabs defaultValue="backup" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="backup" data-testid="tab-backup">
-            <Cloud className="h-4 w-4 mr-2" />
-            Backup & Sync
-          </TabsTrigger>
-          <TabsTrigger value="connections" data-testid="tab-connections">
-            <Globe className="h-4 w-4 mr-2" />
-            Cloud Connections
-          </TabsTrigger>
-          <TabsTrigger value="security" data-testid="tab-security">
-            <Shield className="h-4 w-4 mr-2" />
-            Security
-          </TabsTrigger>
-          <TabsTrigger value="devices" data-testid="tab-devices">
-            <Smartphone className="h-4 w-4 mr-2" />
-            Devices
-          </TabsTrigger>
-        </TabsList>
+      {/* Choose Backup Location */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <HardDrive className="h-5 w-5" />
+            <span>Choose Backup Location</span>
+          </CardTitle>
+          <CardDescription>
+            Select where your encrypted vault backups will be stored.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <Button
+              variant={backupLocation === "local" ? "default" : "outline"}
+              className={backupLocation === "local" ? "bg-orange-500 hover:bg-orange-600 text-white" : ""}
+              onClick={() => handleBackupLocationChange("local")}
+              data-testid="button-backup-local"
+            >
+              <HardDrive className="h-4 w-4 mr-2" />
+              Local Storage
+            </Button>
+            <Button
+              variant={backupLocation === "online" ? "default" : "outline"}
+              className={backupLocation === "online" ? "bg-orange-500 hover:bg-orange-600 text-white" : ""}
+              onClick={() => handleBackupLocationChange("online")}
+              data-testid="button-backup-online"
+            >
+              <Cloud className="h-4 w-4 mr-2" />
+              Online Drive
+            </Button>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Your vault data is always encrypted before leaving your device.
+          </p>
+        </CardContent>
+      </Card>
 
-        <TabsContent value="backup" className="space-y-6">
-          {/* Backup Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Cloud className="h-5 w-5" />
-                <span>Backup Settings</span>
-              </CardTitle>
-              <CardDescription>
-                Configure automatic backup and sync settings for your encrypted vault
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+      {/* Universal Import File Format */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <ChevronDown className="h-5 w-5" />
+            <span>Universal Import File Format</span>
+          </CardTitle>
+          <CardDescription>
+            Select the file format for importing vault data.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Select onValueChange={handleImportFormatChange} value={importFormat}>
+            <SelectTrigger className="w-full" data-testid="select-import-format">
+              <SelectValue placeholder="Select format" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="universal">Universal Format (.zip, .csv, .json)</SelectItem>
+              <SelectItem value="csv">CSV Format (.csv)</SelectItem>
+              <SelectItem value="json">JSON Format (.json)</SelectItem>
+              <SelectItem value="zip">ZIP Archive (.zip)</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-sm text-muted-foreground">
+            Ensure your import file matches the selected format for successful data migration.
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Pro Features */}
+      <ProFeature 
+        featureName="Quantum-Resistant Encryption"
+        description="Advanced lattice-based encryption alongside AES-256 for future-proof security"
+        userAccountType={user.accountType}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Shield className="h-5 w-5 text-blue-600" />
+              <span>Quantum-Resistant Encryption</span>
+            </CardTitle>
+            <CardDescription>
+              Post-quantum cryptography ready for the future
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-3 border rounded-lg">
+                <div className="font-medium text-sm">AES-256-GCM</div>
+                <div className="text-xs text-muted-foreground">Current standard</div>
+              </div>
+              <div className="p-3 border rounded-lg bg-blue-50">
+                <div className="font-medium text-sm text-blue-800">Lattice-Based</div>
+                <div className="text-xs text-blue-600">Quantum-resistant</div>
+              </div>
+            </div>
+            <Button className="w-full" variant="outline">
+              <Zap className="h-4 w-4 mr-2" />
+              Enable Quantum Mode
+            </Button>
+          </CardContent>
+        </Card>
+      </ProFeature>
+
+      <ProFeature 
+        featureName="Real-Time Threat Detection"
+        description="Advanced security monitoring with anti-clickjacking and threat detection"
+        userAccountType={user.accountType}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Eye className="h-5 w-5 text-red-600" />
+              <span>Real-Time Threat Detection</span>
+            </CardTitle>
+            <CardDescription>
+              Monitor and block suspicious activities automatically
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label className="text-base">Automatic Backup</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Automatically backup your vault to connected cloud storage
-                  </p>
-                </div>
-                <Switch
-                  checked={autoBackup}
-                  onCheckedChange={setAutoBackup}
-                  data-testid="switch-auto-backup"
-                />
+                <span className="text-sm">Anti-Clickjacking</span>
+                <Button size="sm" variant="outline">Enable</Button>
               </div>
-
-              <Separator />
-
-              <div className="space-y-3">
-                <Label className="text-base">Backup Frequency</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {["hourly", "daily", "weekly"].map((frequency) => (
-                    <Button
-                      key={frequency}
-                      variant={backupFrequency === frequency ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setBackupFrequency(frequency)}
-                      data-testid={`button-frequency-${frequency}`}
-                      className="capitalize"
-                    >
-                      {frequency}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <Separator />
-
               <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label className="text-base">Encrypt Backups</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Additional encryption layer for cloud backups (recommended)
-                  </p>
-                </div>
-                <Switch
-                  checked={encryptBackups}
-                  onCheckedChange={setEncryptBackups}
-                  data-testid="switch-encrypt-backups"
-                />
+                <span className="text-sm">Suspicious Overlay Detection</span>
+                <Button size="sm" variant="outline">Enable</Button>
               </div>
-
-              <Separator />
-
               <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-medium">Manual Backup</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Create an immediate backup of your vault
-                  </p>
-                </div>
-                <Button 
-                  onClick={handleManualBackup}
-                  data-testid="button-manual-backup"
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  Backup Now
-                </Button>
+                <span className="text-sm">Autofill Protection</span>
+                <Button size="sm" variant="outline">Enable</Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
+      </ProFeature>
 
-          {/* Backup History */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Backup History</CardTitle>
-              <CardDescription>Recent vault backups and their status</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {backupHistory.map((backup) => (
-                  <div
-                    key={backup.id}
-                    className="flex items-center justify-between p-3 border rounded-lg"
-                    data-testid={`backup-item-${backup.id}`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <div>
-                        <p className="font-medium">
-                          {new Date(backup.timestamp).toLocaleDateString()} at{" "}
-                          {new Date(backup.timestamp).toLocaleTimeString()}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {backup.size} • {backup.location}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {backup.encrypted && (
-                        <Badge variant="secondary" className="text-xs">
-                          <Lock className="h-3 w-3 mr-1" />
-                          Encrypted
-                        </Badge>
-                      )}
-                      <Button variant="outline" size="sm" data-testid={`button-download-${backup.id}`}>
-                        <Download className="h-3 w-3 mr-1" />
-                        Download
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+      <ProFeature 
+        featureName="Push Notifications"
+        description="Real-time security alerts and notifications across all devices"
+        userAccountType={user.accountType}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Bell className="h-5 w-5 text-green-600" />
+              <span>Security Notifications</span>
+            </CardTitle>
+            <CardDescription>
+              Stay informed about security events in real-time
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Login Alerts</span>
+                <Button size="sm" variant="outline">Enable</Button>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="connections" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Cloud Storage Connections</CardTitle>
-              <CardDescription>
-                Connect external cloud storage services for vault backup and sync
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {cloudConnections.map((connection) => (
-                  <div
-                    key={connection.id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
-                    data-testid={`connection-item-${connection.id}`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <connection.icon className="h-8 w-8 text-muted-foreground" />
-                      <div>
-                        <h4 className="font-medium">{connection.name}</h4>
-                        <div className="flex items-center space-x-2">
-                          {getStatusIcon(connection.status)}
-                          <Badge 
-                            className={`text-xs ${getStatusColor(connection.status)}`}
-                            data-testid={`badge-status-${connection.id}`}
-                          >
-                            {connection.status}
-                          </Badge>
-                          {connection.lastSync && (
-                            <span className="text-xs text-muted-foreground">
-                              Last sync: {new Date(connection.lastSync).toLocaleString()}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {connection.status === "connected" ? (
-                        <>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            data-testid={`button-sync-${connection.id}`}
-                          >
-                            <RefreshCw className="h-3 w-3 mr-1" />
-                            Sync
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleDisconnectCloud(connection.id)}
-                            data-testid={`button-disconnect-${connection.id}`}
-                          >
-                            Disconnect
-                          </Button>
-                        </>
-                      ) : (
-                        <Button 
-                          onClick={() => handleConnectCloud(connection.id)}
-                          data-testid={`button-connect-${connection.id}`}
-                        >
-                          Connect
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Suspicious Activity</span>
+                <Button size="sm" variant="outline">Enable</Button>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="security" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Security Settings</CardTitle>
-              <CardDescription>
-                Advanced security configuration for your vault
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-base">Zero-Knowledge Encryption</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Your vault is encrypted locally with your master key
-                    </p>
-                  </div>
-                  <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                    <Lock className="h-3 w-3 mr-1" />
-                    Active
-                  </Badge>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-3">
-                  <Label className="text-base">Master Key</Label>
-                  <div className="p-3 bg-muted rounded-lg">
-                    <p className="text-sm font-mono break-all">
-                      {user.userKey.substring(0, 32)}...
-                    </p>
-                  </div>
-                  <Button variant="outline" size="sm" data-testid="button-regenerate-key">
-                    <Key className="h-3 w-3 mr-1" />
-                    Regenerate Key
-                  </Button>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-3">
-                  <Label className="text-base">Zero-Knowledge Proof</Label>
-                  <div className="p-3 bg-muted rounded-lg">
-                    <p className="text-sm font-mono break-all">
-                      {user.zkProof.substring(0, 32)}...
-                    </p>
-                  </div>
-                </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Clipboard Operations</span>
+                <Button size="sm" variant="outline">Enable</Button>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="devices" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Connected Devices</CardTitle>
-              <CardDescription>
-                Manage devices that have access to your vault
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8">
-                <Smartphone className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Device Management</h3>
-                <p className="text-muted-foreground">
-                  Device management features coming soon
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            </div>
+          </CardContent>
+        </Card>
+      </ProFeature>
     </div>
   );
 }

@@ -102,20 +102,38 @@ export class MemStorage implements IStorage {
     try {
       const bcrypt = await import('bcrypt');
       const testPasswordHash = await bcrypt.hash('testpassword123', 10);
+      const proPasswordHash = await bcrypt.hash('demopro123', 10);
       
-      const testUser: User = {
-        id: 'test-user-123',
-        email: 'test@example.com',
+      // Demo account (free features)
+      const demoUser: User = {
+        id: 'demo-user-123',
+        email: 'demo@example.com',
         masterPasswordHash: testPasswordHash,
+        accountType: 'free',
         isActive: true,
         lastLoginAt: null,
         createdAt: new Date()
       };
       
-      this.users.set(testUser.id, testUser);
-      console.log('✅ Test user created: test@example.com / testpassword123');
+      // Demo Pro account (pro features)
+      const demoProUser: User = {
+        id: 'demopro-user-456',
+        email: 'demopro@example.com',
+        masterPasswordHash: proPasswordHash,
+        accountType: 'pro',
+        isActive: true,
+        lastLoginAt: null,
+        createdAt: new Date()
+      };
+      
+      this.users.set(demoUser.id, demoUser);
+      this.users.set(demoProUser.id, demoProUser);
+      
+      console.log('✅ Demo accounts created:');
+      console.log('   📱 Free: demo@example.com / testpassword123');
+      console.log('   💎 Pro:  demopro@example.com / demopro123');
     } catch (error) {
-      console.error('❌ Failed to create test user:', error);
+      console.error('❌ Failed to create demo users:', error);
     }
   }
 

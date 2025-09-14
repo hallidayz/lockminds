@@ -23,6 +23,7 @@ interface ShareExportProps {
     accessToken: string;
     sessionId: string;
     masterPassword: string;
+    accountType: 'free' | 'pro';
   };
 }
 

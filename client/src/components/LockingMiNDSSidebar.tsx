@@ -23,8 +23,10 @@ import {
   Fingerprint,
   Clock,
   Lock,
-  LogOut
+  LogOut,
+  Crown
 } from "lucide-react";
+import UpgradeButton from "./UpgradeButton";
 import lockMindLogo from "@assets/LockingMiNDS.png";
 
 interface LockingMiNDSSidebarProps {
@@ -39,16 +41,18 @@ interface LockingMiNDSSidebarProps {
     login: number;
     payment: number;
   };
+  accountType: 'free' | 'pro';
 }
 
 export default function LockingMiNDSSidebar({ 
   activeView, 
   onViewChange, 
-  onAddEntry,
-  onLogout,
+  onAddEntry, 
+  onLogout, 
   searchQuery, 
-  onSearchChange,
-  entryCount 
+  onSearchChange, 
+  entryCount,
+  accountType
 }: LockingMiNDSSidebarProps) {
   
   const menuItems = [
@@ -194,6 +198,23 @@ export default function LockingMiNDSSidebar({
             </div>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Upgrade Button for Free Users */}
+        {accountType === 'free' && (
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <div className="mx-3 mb-3">
+                <UpgradeButton 
+                  size="sm" 
+                  className="w-full text-xs"
+                >
+                  <Crown className="h-3 w-3 mr-1" />
+                  Upgrade to Pro
+                </UpgradeButton>
+              </div>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         {/* Logout */}
         <SidebarGroup className="mt-auto">

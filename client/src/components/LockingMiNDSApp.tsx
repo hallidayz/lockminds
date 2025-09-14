@@ -12,6 +12,7 @@ interface UserData {
   accessToken: string;
   sessionId: string;
   masterPassword: string; // Required for LockingMiNDSMain component
+  accountType: 'free' | 'pro'; // Account type for feature gating
 }
 
 interface SecurityLog {
@@ -61,7 +62,8 @@ export default function LockingMiNDSApp() {
                 userId: currentUser.id,
                 accessToken: AuthService.getAccessToken() || '',
                 sessionId: localStorage.getItem('sessionId') || '',
-                masterPassword: '' // Placeholder for restored session - will be updated on login
+                masterPassword: '', // Placeholder for restored session - will be updated on login
+                accountType: currentUser.accountType || 'free'
               };
               
               setUser(userData);
@@ -157,7 +159,8 @@ export default function LockingMiNDSApp() {
         userId: authResult.user.id,
         accessToken: authResult.accessToken,
         sessionId: authResult.sessionId,
-        masterPassword: masterPassword // Use the actual master password for encryption
+        masterPassword: masterPassword, // Use the actual master password for encryption
+        accountType: authResult.user.accountType || 'free'
       };
       
       setUser(userData);
@@ -221,7 +224,8 @@ export default function LockingMiNDSApp() {
         userId: authResult.user.id,
         accessToken: authResult.accessToken,
         sessionId: authResult.sessionId,
-        masterPassword: masterPassword // Use the actual master password for encryption
+        masterPassword: masterPassword, // Use the actual master password for encryption
+        accountType: authResult.user.accountType || 'free'
       };
       
       setUser(userData);
@@ -288,7 +292,8 @@ export default function LockingMiNDSApp() {
         userId: authResult.user.id,
         accessToken: authResult.accessToken,
         sessionId: authResult.sessionId,
-        masterPassword: masterPassword // Use the actual master password for encryption
+        masterPassword: masterPassword, // Use the actual master password for encryption
+        accountType: authResult.user.accountType || 'free'
       };
       
       setUser(userData);
@@ -358,7 +363,8 @@ export default function LockingMiNDSApp() {
         userId: authResult.user.id,
         accessToken: authResult.accessToken,
         sessionId: authResult.sessionId,
-        masterPassword: masterPassword // Use the actual master password for encryption
+        masterPassword: masterPassword, // Use the actual master password for encryption
+        accountType: authResult.user.accountType || 'free'
       };
       
       setUser(userData);

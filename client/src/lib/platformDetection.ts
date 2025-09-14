@@ -41,7 +41,7 @@ export class PlatformDetection {
       supportsTouchID: this.checkTouchIDSupport(os, version),
       supportsLinuxFprint: this.checkLinuxFprintSupport(os),
       supportsWebAuthn: this.checkWebAuthnSupport(),
-      supportsPlatformAuthenticator: this.checkPlatformAuthenticatorSupport()
+      supportsPlatformAuthenticator: false // Will be set asynchronously
     };
   }
 

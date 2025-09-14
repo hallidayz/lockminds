@@ -3,6 +3,7 @@ import { apiRequest } from './queryClient';
 export interface User {
   id: string;
   email: string;
+  accountType: 'free' | 'pro';
   isActive: boolean;
   lastLoginAt?: string;
   createdAt: string;
