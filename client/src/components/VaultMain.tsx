@@ -7,7 +7,7 @@ import VaultEntry from "./VaultEntry";
 import AddEntryForm from "./AddEntryForm";
 import SecurityDashboard from "./SecurityDashboard";
 import Settings from "./Settings";
-import { Settings as SettingsIcon, Shield, Plus, Grid3X3 } from "lucide-react";
+import { Settings as SettingsIcon, Shield, Plus, Grid3X3, LogOut } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { 
   EncryptedVaultEntry, 
@@ -312,6 +312,17 @@ export default function VaultMain({
                   </Button>
                 </>
               )}
+              <Button 
+                onClick={onLogout}
+                variant="outline"
+                size="sm"
+                data-testid="button-logout-header"
+                className="text-xs sm:text-sm"
+              >
+                <LogOut className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Logout</span>
+                <span className="sm:hidden">Exit</span>
+              </Button>
             </div>
           </header>
 

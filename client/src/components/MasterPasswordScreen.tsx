@@ -364,19 +364,17 @@ export default function MasterPasswordScreen({
                   >
                     Forgot your password?
                   </Button>
-                  {!isAuthenticated && (
-                    <div>
-                      <Button
-                        type="button"
-                        variant="link"
-                        className="text-sm text-muted-foreground hover:text-primary"
-                        onClick={() => setShowRegistration(true)}
-                        data-testid="button-sign-up"
-                      >
-                        Don't have an account? Sign up
-                      </Button>
-                    </div>
-                  )}
+                  <div>
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="text-sm text-muted-foreground hover:text-primary"
+                      onClick={() => setShowRegistration(true)}
+                      data-testid="button-sign-up"
+                    >
+                      Don't have an account? Sign up
+                    </Button>
+                  </div>
                 </div>
               </form>
             )}
@@ -398,6 +396,17 @@ export default function MasterPasswordScreen({
                     {isLoading ? "Authenticating..." : "Authenticate with Biometrics"}
                   </Button>
                 </div>
+                <div className="text-center">
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="text-sm text-muted-foreground hover:text-primary"
+                    onClick={() => setShowRegistration(true)}
+                    data-testid="button-sign-up-biometric"
+                  >
+                    Don't have an account? Sign up
+                  </Button>
+                </div>
               </div>
             )}
 
@@ -416,6 +425,17 @@ export default function MasterPasswordScreen({
                   >
                     <Shield className="h-4 w-4 mr-2" />
                     {isLoading ? "Authenticating..." : "Authenticate with WebAuthn"}
+                  </Button>
+                </div>
+                <div className="text-center">
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="text-sm text-muted-foreground hover:text-primary"
+                    onClick={() => setShowRegistration(true)}
+                    data-testid="button-sign-up-webauthn"
+                  >
+                    Don't have an account? Sign up
                   </Button>
                 </div>
               </div>
@@ -448,6 +468,17 @@ export default function MasterPasswordScreen({
                 <p className="text-xs text-muted-foreground text-center">
                   We'll send a secure authentication link to your email
                 </p>
+                <div className="text-center">
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="text-sm text-muted-foreground hover:text-primary"
+                    onClick={() => setShowRegistration(true)}
+                    data-testid="button-sign-up-passwordless"
+                  >
+                    Don't have an account? Sign up
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>
