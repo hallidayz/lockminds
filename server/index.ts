@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -56,16 +57,43 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
+  // Smart port selection - finds an available port automatically
+  const startPort = parseInt(process.env.PORT || '3001', 10);
+  
+  const findAvailablePort = (port: number): Promise<number> => {
+    return new Promise((resolve, reject) => {
+      const testServer = require('http').createServer();
+      
+      testServer.listen(port, '0.0.0.0', () => {
+        const foundPort = testServer.address()?.port;
+        testServer.close(() => {
+          resolve(foundPort || port);
+        });
+      });
+      
+      testServer.on('error', (err: any) => {
+        if (err.code === 'EADDRINUSE') {
+          // Port is busy, try the next one
+          findAvailablePort(port + 1).then(resolve).catch(reject);
+        } else {
+          reject(err);
+        }
+      });
+    });
+  };
+
+  findAvailablePort(startPort).then((port) => {
+    server.listen({
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    }, () => {
+      log(`🚀 LockMiNDS is running on port ${port}`);
+      log(`🌐 Open your browser: http://localhost:${port}`);
+      log(`📱 Or try: http://127.0.0.1:${port}`);
+    });
+  }).catch((err) => {
+    log(`❌ Failed to start server: ${err.message}`);
+    process.exit(1);
   });
 })();

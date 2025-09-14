@@ -1,8 +1,37 @@
 # LockMiNDS
-
 **Enterprise-Grade Password Manager with Zero-Trust Architecture**
 
 LockMiNDS is a cross-platform password manager built with modern security principles, featuring quantum-resistant encryption, zero-trust architecture, and enterprise-grade authentication methods.
+
+## 🚀 **One-Click Installation**
+
+### **For Everyone (Recommended)**
+```bash
+# Download and run - that's it!
+npx lockminds@latest
+```
+
+### **For Developers**
+```bash
+# Clone and install
+git clone https://github.com/yourusername/lockminds.git
+cd lockminds
+npm install
+npm run setup
+```
+
+**That's it!** No configuration needed. The app will:
+- ✅ Automatically generate secure keys
+- ✅ Set up the database
+- ✅ Start the server
+- ✅ Open in your browser
+
+## 🎯 **Quick Start**
+
+1. **Install:** `npx lockminds@latest`
+2. **Open:** http://localhost:3001
+3. **Create account:** Set up your master password
+4. **Start using:** Add your first password entry
 
 ## 🔐 Security Features
 
@@ -36,7 +65,7 @@ LockMiNDS is a cross-platform password manager built with modern security princi
 
 ### Backend  
 - **Express.js** with TypeScript
-- **Drizzle ORM** with PostgreSQL
+- **Drizzle ORM** with SQLite (auto-configured)
 - **JWT** authentication with RSA signing
 - **WebAuthn** server implementation
 - **Rate limiting** and security middleware
@@ -47,52 +76,35 @@ LockMiNDS is a cross-platform password manager built with modern security princi
 - **bcrypt** for password hashing
 - **jsonwebtoken** for session management
 
-## 📦 Installation
+## 📦 **Installation Options**
 
-### Prerequisites
-- Node.js 18+ 
-- PostgreSQL database
-- Modern web browser with WebAuthn support
+### **Option 1: NPX (Easiest)**
+```bash
+npx lockminds@latest
+```
+*Perfect for trying out the app*
 
-### Development Setup
+### **Option 2: NPM Global**
+```bash
+npm install -g lockminds
+lockminds
+```
+*Great for regular use*
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/hallidayz/lockminds.git
-   cd lockminds
-   ```
+### **Option 3: Local Development**
+```bash
+git clone https://github.com/yourusername/lockminds.git
+cd lockminds
+npm install
+npm run setup
+```
+*Best for developers*
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   ```bash
-   # Copy and configure your environment
-   cp .env.example .env
-   ```
-   
-   Required variables:
-   ```
-   DATABASE_URL=postgresql://user:password@localhost:5432/lockminds
-   SESSION_SECRET=your-session-secret-here
-   ```
-
-4. **Initialize database**
-   ```bash
-   npm run db:push
-   ```
-
-5. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-6. **Access the application**
-   - Open http://localhost:5000
-   - Create your master account
-   - Start managing your passwords securely
+### **Option 4: Docker**
+```bash
+docker run -p 3001:3001 lockminds/lockminds
+```
+*Perfect for servers*
 
 ## 🎯 Usage
 
@@ -137,14 +149,16 @@ lockminds/
 │   ├── routes/          # API endpoints
 │   └── services/        # Business logic
 ├── shared/              # Common types and schemas
+├── install.js           # Automated setup script
 └── package.json         # Dependencies and scripts
 ```
 
 ### Available Scripts
+- `npm run setup` - Automated installation and configuration
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
+- `npm run start` - Start production server
 - `npm run db:push` - Sync database schema
-- `npm run db:studio` - Open database studio
 
 ### Contributing
 1. Fork the repository
@@ -160,6 +174,7 @@ lockminds/
 - ✅ Core password management features
 - ✅ Modern React UI with dark theme
 - ✅ WebAuthn authentication foundation
+- ✅ One-click installation
 
 ### Phase 2 (Planned)
 - [ ] Browser extension for autofill
