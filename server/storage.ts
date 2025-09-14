@@ -93,6 +93,30 @@ export class MemStorage implements IStorage {
     this.authChallenges = new Map();
     this.pushTokens = new Map();
     this.mfaChallenges = new Map();
+    
+    // Initialize with test user for demo purposes
+    this.initializeTestUser();
+  }
+
+  private async initializeTestUser() {
+    try {
+      const bcrypt = await import('bcrypt');
+      const testPasswordHash = await bcrypt.hash('testpassword123', 10);
+      
+      const testUser: User = {
+        id: 'test-user-123',
+        email: 'test@example.com',
+        masterPasswordHash: testPasswordHash,
+        isActive: true,
+        lastLoginAt: null,
+        createdAt: new Date()
+      };
+      
+      this.users.set(testUser.id, testUser);
+      console.log('✅ Test user created: test@example.com / testpassword123');
+    } catch (error) {
+      console.error('❌ Failed to create test user:', error);
+    }
   }
 
   // User operations

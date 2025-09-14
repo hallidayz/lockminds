@@ -304,7 +304,22 @@ export default function MasterPasswordScreen({
             {authMode === "password" && (
               <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="email">Email</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setEmail('test@example.com');
+                      setMasterPassword('testpassword123');
+                    }}
+                    className="text-xs text-muted-foreground hover:text-foreground"
+                    title="Fill demo credentials"
+                  >
+                    🎯 Demo
+                  </Button>
+                </div>
                 <Input
                   id="email"
                   type="email"
@@ -386,15 +401,29 @@ export default function MasterPasswordScreen({
                   <p className="text-muted-foreground mb-4">
                     Touch the sensor or look at your camera to authenticate
                   </p>
-                  <Button
-                    onClick={onBiometricLogin}
-                    disabled={isLoading}
-                    className="w-full"
-                    data-testid="button-biometric-auth"
-                  >
-                    <Fingerprint className="h-4 w-4 mr-2" />
-                    {isLoading ? "Authenticating..." : "Authenticate with Biometrics"}
-                  </Button>
+                  <div className="flex gap-2 justify-center">
+                    <Button
+                      onClick={onBiometricLogin}
+                      disabled={isLoading}
+                      className="flex-1"
+                      data-testid="button-biometric-auth"
+                    >
+                      <Fingerprint className="h-4 w-4 mr-2" />
+                      {isLoading ? "Authenticating..." : "Authenticate with Biometrics"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEmail('test@example.com');
+                        onBiometricLogin();
+                      }}
+                      className="text-xs"
+                      title="Demo biometric login"
+                    >
+                      🎯 Demo
+                    </Button>
                 </div>
                 <div className="text-center">
                   <Button
