@@ -266,7 +266,7 @@ export default function VaultMain({
 
   return (
     <SidebarProvider style={style as React.CSSProperties}>
-      <div className="flex h-screen w-full bg-background">
+      <div className="flex h-screen w-full bg-background overflow-hidden">
         <VaultSidebar
           activeView={activeView}
           onViewChange={setActiveView}
@@ -280,32 +280,35 @@ export default function VaultMain({
         {/* Main Content */}
         <div className="flex flex-col flex-1 overflow-hidden">
           {/* Header */}
-          <header className="flex items-center justify-between p-4 border-b bg-background">
-            <div className="flex items-center space-x-4">
-              <SidebarTrigger data-testid="button-sidebar-toggle" />
-              <div>
-                <h1 className="text-xl font-semibold" data-testid="text-view-title">
+          <header className="flex items-center justify-between p-3 sm:p-4 border-b bg-background">
+            <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
+              <SidebarTrigger data-testid="button-sidebar-toggle" className="shrink-0" />
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-xl font-semibold truncate" data-testid="text-view-title">
                   {getViewTitle()}
                 </h1>
-                <p className="text-sm text-muted-foreground" data-testid="text-user-email">
+                <p className="text-xs sm:text-sm text-muted-foreground truncate" data-testid="text-user-email">
                   {user.email}
                 </p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
               <ThemeToggle />
               {activeView !== "security" && activeView !== "settings" && (
                 <>
-                  <Badge variant="outline" data-testid="badge-entry-count">
+                  <Badge variant="outline" data-testid="badge-entry-count" className="hidden sm:inline-flex">
                     {filteredEntries.length} items
                   </Badge>
                   <Button 
                     onClick={() => setShowAddEntry(true)}
                     data-testid="button-add-entry-header"
+                    size="sm"
+                    className="text-xs sm:text-sm"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Entry
+                    <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Add Entry</span>
+                    <span className="sm:hidden">Add</span>
                   </Button>
                 </>
               )}
@@ -313,22 +316,22 @@ export default function VaultMain({
           </header>
 
           {/* Content Area */}
-          <main className="flex-1 overflow-y-auto p-6">
+          <main className="flex-1 overflow-y-auto p-3 sm:p-6">
             {/* Vault Entries Grid */}
             {(activeView === "all" || activeView === "logins" || activeView === "payments") && (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {filteredEntries.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Grid3X3 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-medium mb-2">No entries found</h3>
-                    <p className="text-muted-foreground mb-4">
+                  <div className="text-center py-8 sm:py-12 px-4">
+                    <Grid3X3 className="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-base sm:text-lg font-medium mb-2">No entries found</h3>
+                    <p className="text-sm sm:text-base text-muted-foreground mb-4">
                       {searchQuery 
                         ? "Try adjusting your search terms"
                         : "Get started by adding your first vault entry"
                       }
                     </p>
                     {!searchQuery && (
-                      <Button onClick={() => setShowAddEntry(true)}>
+                      <Button onClick={() => setShowAddEntry(true)} size="sm" className="sm:size-default">
                         <Plus className="h-4 w-4 mr-2" />
                         Add Your First Entry
                       </Button>

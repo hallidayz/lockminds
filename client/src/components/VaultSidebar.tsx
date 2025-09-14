@@ -87,32 +87,33 @@ export default function VaultSidebar({
         {/* Header */}
         <SidebarGroup>
           <div className="px-3 py-2">
-            <div className="flex items-center space-x-3 mb-4">
-              <img src={lockMindLogo} alt="LockingMiNDS" className="h-8 w-8" />
-              <h2 className="text-lg font-bold bg-gradient-to-r from-yellow-400 to-blue-600 bg-clip-text text-transparent">
+            <div className="flex items-center space-x-2 sm:space-x-3 mb-4">
+              <img src={lockMindLogo} alt="LockingMiNDS" className="h-6 w-6 sm:h-8 sm:w-8 shrink-0" />
+              <h2 className="text-base sm:text-lg font-bold bg-gradient-to-r from-yellow-400 to-blue-600 bg-clip-text text-transparent truncate">
                 LockingMiNDS
               </h2>
             </div>
             
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
               <Input
                 placeholder="Search vault..."
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="pl-9"
+                className="pl-7 sm:pl-9 text-sm"
                 data-testid="input-search"
               />
             </div>
 
             {/* Add Entry Button */}
             <Button 
-              className="w-full mt-3"
+              className="w-full mt-3 text-sm"
               onClick={onAddEntry}
               data-testid="button-add-entry"
+              size="sm"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
               Add Entry
             </Button>
           </div>
@@ -129,13 +130,14 @@ export default function VaultSidebar({
                     onClick={() => onViewChange(item.view)}
                     isActive={activeView === item.view}
                     data-testid={`button-nav-${item.view}`}
+                    className="text-sm"
                   >
-                    <item.icon className="h-4 w-4" />
-                    <span className="flex-1">{item.title}</span>
+                    <item.icon className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="flex-1 truncate">{item.title}</span>
                     {item.count !== undefined && (
                       <Badge 
                         variant="secondary" 
-                        className="ml-auto text-xs"
+                        className="ml-auto text-xs shrink-0"
                         data-testid={`badge-count-${item.view}`}
                       >
                         {item.count}
@@ -150,20 +152,20 @@ export default function VaultSidebar({
 
         {/* Security Status */}
         <SidebarGroup>
-          <SidebarGroupLabel>Security</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs">Security</SidebarGroupLabel>
           <SidebarGroupContent>
             <div className="px-3 space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Encryption</span>
-                <div className="flex items-center space-x-1">
+              <div className="flex items-center justify-between text-xs sm:text-sm">
+                <span className="text-muted-foreground truncate">Encryption</span>
+                <div className="flex items-center space-x-1 shrink-0">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <span className="text-xs">Active</span>
                 </div>
               </div>
               
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Session</span>
-                <div className="flex items-center space-x-1">
+              <div className="flex items-center justify-between text-xs sm:text-sm">
+                <span className="text-muted-foreground truncate">Session</span>
+                <div className="flex items-center space-x-1 shrink-0">
                   <Lock className="h-3 w-3 text-green-500" />
                   <span className="text-xs">Secure</span>
                 </div>
@@ -177,11 +179,12 @@ export default function VaultSidebar({
           <SidebarGroupContent>
             <Button 
               variant="outline" 
-              className="mx-3 mb-3"
+              className="mx-3 mb-3 text-sm"
               onClick={onLogout}
               data-testid="button-logout"
+              size="sm"
             >
-              <LogOut className="h-4 w-4 mr-2" />
+              <LogOut className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
               Lock Vault
             </Button>
           </SidebarGroupContent>

@@ -211,11 +211,11 @@ export default function MasterPasswordScreen({
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background relative">
       {/* Theme Toggle */}
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 z-10">
         <ThemeToggle />
       </div>
       
-      <div className="w-full max-w-md space-y-6">
+      <div className="w-full max-w-md space-y-6 px-2 sm:px-0">
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center space-x-3">
