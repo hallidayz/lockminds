@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Shield, Lock, Eye, EyeOff, CheckCircle2, Fingerprint, Smartphone, Zap } from "lucide-react";
 import lockMindLogo from "@assets/LockMind_1757775227799.png";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface MasterPasswordScreenProps {
   onLogin: (email: string, masterPassword: string) => void;
@@ -208,7 +209,12 @@ export default function MasterPasswordScreen({
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background relative">
+      {/* Theme Toggle */}
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+      
       <div className="w-full max-w-md space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">

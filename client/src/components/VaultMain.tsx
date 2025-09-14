@@ -8,6 +8,7 @@ import AddEntryForm from "./AddEntryForm";
 import SecurityDashboard from "./SecurityDashboard";
 import Settings from "./Settings";
 import { Settings as SettingsIcon, Shield, Plus, Grid3X3 } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { 
   EncryptedVaultEntry, 
   VaultEntryData, 
@@ -292,20 +293,23 @@ export default function VaultMain({
               </div>
             </div>
             
-            {activeView !== "security" && activeView !== "settings" && (
-              <div className="flex items-center space-x-2">
-                <Badge variant="outline" data-testid="badge-entry-count">
-                  {filteredEntries.length} items
-                </Badge>
-                <Button 
-                  onClick={() => setShowAddEntry(true)}
-                  data-testid="button-add-entry-header"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Entry
-                </Button>
-              </div>
-            )}
+            <div className="flex items-center space-x-2">
+              <ThemeToggle />
+              {activeView !== "security" && activeView !== "settings" && (
+                <>
+                  <Badge variant="outline" data-testid="badge-entry-count">
+                    {filteredEntries.length} items
+                  </Badge>
+                  <Button 
+                    onClick={() => setShowAddEntry(true)}
+                    data-testid="button-add-entry-header"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Entry
+                  </Button>
+                </>
+              )}
+            </div>
           </header>
 
           {/* Content Area */}
